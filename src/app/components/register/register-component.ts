@@ -21,7 +21,7 @@ import { IonicModule, ToastController } from '@ionic/angular';
       <div class="flex-center">
         <ion-card class="register-card ion-padding">
           <ion-card-header>
-            <ion-card-title class="text-2xl font-semibold login-title">Create Account</ion-card-title>
+            <h2 class="register-title">Create Account</h2>
           </ion-card-header>
 
           <ion-card-content>
@@ -91,9 +91,10 @@ import { IonicModule, ToastController } from '@ionic/angular';
                 Register
               </ion-button>
 
-              <ion-button fill="clear" color="medium" expand="block" (click)="goToLogin()">
-                Already have an account?
-              </ion-button>
+              <p class="signup-text">
+                Signed up already?
+                <span class="signup-link" (click)="goToLogin()">Login</span>
+              </p>
             </form>
           </ion-card-content>
         </ion-card>

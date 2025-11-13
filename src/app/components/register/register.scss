@@ -1,42 +1,51 @@
-    .bg-light {
-      background-color: #f4f5f8;
-    }
+.bg-light {
+  background-color: #f4f5f8;
+}
 
-    .flex-center {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100%;
-    }
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+}
 
-    .register-card {
-      width: 90%;
-      max-width: 360px;
-      margin: auto;
-      border-radius: 16px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-    }
+.register-card {
+  width: 420px;
+  max-width: 90%;
+  padding: 24px;
+  border-radius: 18px;
+  margin-top: -30px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
 
-    ion-card-title {
-      font-size: 1.4rem;
-      text-align: center;
-      margin-bottom: 8px;
-    }
+@media (max-width: 768px) {
+  .register-card {
+    margin-top: -130px;
+  }
+}
 
-    ion-item {
-       margin-bottom: 20px; 
-    }
+ion-card-title {
+  font-size: 1.4rem;
+  text-align: center;
+  margin-bottom: 8px;
+}
 
-    ion-button {
-      --border-radius: 8px;
-    }
-    
-    ion-label {
-  color: #ffffff !important; 
+ion-item {
+  --background: rgba(255,255,255,0.18);
+  --border-radius: 14px;
+  margin-bottom: 10px; 
 }
 
 ion-input {
-  color: #ffffff !important;
+  color: #fff !important;
+  padding: 6px 10px;
+}
+
+ion-label {
+  color: rgba(0, 0, 0, 0.55) !important;
+  font-weight: 500;
 }
 
 ion-item.ion-valid,
@@ -44,6 +53,12 @@ ion-item.ion-invalid {
   --highlight-color-valid: #ffffff;
   --highlight-color-invalid: #ffffff;
 }
+
+ion-button {
+  --background: linear-gradient(90deg, #4d7cff, #6c9cff);
+  --border-radius: 10px;
+  font-weight: 600;
+ }
 
 .page-title {
   font-size: 1.6rem;
@@ -56,10 +71,28 @@ ion-item.ion-invalid {
   padding: 8px 0;
 }
 
-.login-title {
-  color: #f7f9ff;             
-  font-size: 1.6rem;
+.register-title {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.signup-text {
+  margin-top: 22px;
+  font-size: 1.05rem;
+  color: rgba(0, 0, 0, 0.75); 
   font-weight: 600;
   text-align: center;
-  margin-bottom: 4px;
+  letter-spacing: 0.2px;
+}
+
+.signup-link {
+  color: #246bff; 
+  font-weight: 700;
+  margin-left: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.signup-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
 }
