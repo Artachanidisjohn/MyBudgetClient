@@ -1,0 +1,342 @@
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(180deg, #2b3a55, #1b2432);
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  max-width: 550px;
+  margin-left: 15px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .expense-form {
+    max-width: 100%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+button {
+  background-color: #4a6cf7;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: #3b58c1;
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-group select {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-edit:hover {
+  color: #ffd54f;
+  transform: scale(1.1);
+}
+
+.btn-delete:hover {
+  color: #ef5350;
+  transform: scale(1.1);
+}
+
+.expenses-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 20px;
+}
+
+.expense-card {
+  background: linear-gradient(180deg, #2b3a55, #1b2432);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  max-width: 550px;
+}
+
+.expense-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 8px;
+  color: #fff;
+}
+
+.expense-info p {
+  margin: 4px 0;
+  opacity: 0.85;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #fff;
+  padding: 2px;
+}
+
+.custom-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4caf50;
+  color: white;
+  padding: 14px 20px;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 99999;
+  max-width: 250px;
+}
+
+.page-scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 60px;
+}
+
+.empty-state {
+  text-align: center;
+  width: 100%;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-state p {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.empty-state small {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.custom-ion-select {
+  --background: rgba(255, 255, 255, 0.1);
+  --color: #fff;
+  --placeholder-color: rgba(255, 255, 255, 0.5);
+  --padding-start: 10px;
+  --padding-end: 10px;
+  border-radius: 6px;
+  height: 43px;
+  display: flex;
+  align-items: center;
+}
+
+ion-select-popover {
+  --background: #2b3a55;
+  --color: #fff;
+}
+
+.custom-ion-select {
+  --highlight-color-focused: transparent !important;
+  --highlight-color-valid: transparent !important;
+  --highlight-color-invalid: transparent !important;
+  --highlight-height: 0 !important;
+}
+
+::ng-deep .date-field .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+}
+
+::ng-deep .date-field .mdc-text-field--filled {
+  background: transparent !important;
+}
+
+::ng-deep .date-field .mdc-text-field__input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+::ng-deep .date-field .mdc-line-ripple {
+  display: none !important;
+}
+
+.form-group .date-field {
+  margin-top: -11px !important;
+}
+
+.top-tabs {
+  display: flex;
+  justify-content: center;
+  background: #1f2a44;
+  padding: 10px;
+  gap: 10px;
+}
+
+.top-tabs button {
+  background: #324a73;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.top-tabs button.active {
+  background: #556fbf;
+}
+
+.filters-card {
+  margin: 20px auto;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 552px;
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-left: 15px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sort-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sort-row button {
+  background: #4a6cf7;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.sort-row button:hover {
+  background: #3c55c0;
+}
+
+.form-filter-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+@media (min-width: 900px) {
+  .expense-form {
+    flex: 1;
+  }
+  .filters-card {
+    flex: 1;
+    max-width: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .expense-form {
+    max-width: 95% !important;
+    width: 90% !important;
+    margin: 0 auto !important;
+  }
+}
+
+@media (max-width: 899px) {
+  .form-filter-row {
+    flex-direction: column;
+  }
+}
+
+.records-section {
+  margin: 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  max-width: 570px;
+}
+
+@media (max-width: 768px) {
+  .records-section {
+    max-width: 310px !important;
+  }
+}
+
+.expenses-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+

@@ -1,1 +1,64 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/float-elements.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/text-transformation.css';
+@import '@ionic/angular/css/flex-utils.css';
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* :root {
+  --app-background: linear-gradient(180deg, #5EB8FF 0%, #8DD8FF 100%);
+  --ion-background-color: var(--app-background);
+  --ion-text-color: #ffffff;
+} */
+
+/* :root {
+  --app-background: linear-gradient(180deg, #5c6bc0 0%, #42a5f5 100%);
+  --ion-background-color: var(--app-background);
+  --ion-text-color: #ffffff;
+} */
+
+/* :root {
+  --app-background: linear-gradient(180deg, #0d1422 0%, #1a2235 100%);
+  --ion-background-color: var(--app-background);
+  --ion-text-color: #ffffff;
+} */
+/* :root {
+  --app-background: linear-gradient(180deg, #3a6fb0 0%, #5b8ed4 100%);
+  --ion-background-color: var(--app-background);
+  --ion-text-color: #ffffff;
+} */
+
+/* :root {
+  --app-background: linear-gradient(180deg, #5f9ed9 0%, #a3c8f2 100%);
+  --ion-background-color: var(--app-background);
+  --ion-text-color: #ffffff;
+} */
+
+:root {
+  --app-background: linear-gradient(180deg, #344a68 0%, #597ba5 100%);
+  --ion-background-color: var(--app-background);
+  --ion-text-color: #ffffff;
+}
+
+ion-toast {
+  --max-width: 350px;
+  --border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+ion-popover{
+  margin-left: 23px;
+  margin-top: 15px;
+}
+
+

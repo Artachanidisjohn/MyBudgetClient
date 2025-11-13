@@ -1,0 +1,147 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth-service';
+import { IonicModule, ToastController } from '@ionic/angular';
+
+@Component({
+  selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule],
+  styleUrls: ['register.scss'],
+  template: `
+    <ion-header>
+      <ion-toolbar>
+        <h1 class="ion-text-center" style="color: #ff6f00;font-size: 1.4rem;">Budget Tracker</h1>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding ion-text-center bg-light">
+      <div class="flex-center">
+        <ion-card class="register-card ion-padding">
+          <ion-card-header>
+            <ion-card-title class="text-2xl font-semibold">Create Account</ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+            <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)" novalidate>
+              <ion-item lines="full">
+                <ion-label position="floating">Name</ion-label>
+                <ion-input type="text" [(ngModel)]="name" name="name" required #nameCtrl="ngModel">
+                </ion-input>
+              </ion-item>
+
+              @if ((showErrors || nameCtrl.touched) && nameCtrl.errors?.['required']) {
+              <ion-note color="danger">Name is required</ion-note>
+              }
+
+              <ion-item lines="full">
+                <ion-label position="floating">Email</ion-label>
+                <ion-input
+                  type="email"
+                  name="email"
+                  required
+                  email
+                  [(ngModel)]="email"
+                  #emailCtrl="ngModel"
+                >
+                </ion-input>
+              </ion-item>
+
+              @if ((showErrors || emailCtrl.touched) && emailCtrl.errors) { @if
+              (emailCtrl.errors['required']) {
+              <ion-note color="danger">Email is required</ion-note>
+              } @else if (emailCtrl.errors['email']) {
+              <ion-note color="danger">Please enter a valid email address</ion-note>
+              } }
+
+              <ion-item lines="full">
+                <ion-label position="floating">Password</ion-label>
+                <ion-input
+                  [type]="hidePassword ? 'password' : 'text'"
+                  [(ngModel)]="password"
+                  name="password"
+                  required
+                  minlength="6"
+                  #passwordCtrl="ngModel"
+                >
+                </ion-input>
+
+                @if (password.length > 0) {
+                <ion-icon
+                  style="margin-top: 30px;"
+                  slot="end"
+                  [name]="hidePassword ? 'eye-off-outline' : 'eye-outline'"
+                  (click)="togglePasswordVisibility()"
+                  class="password-eye"
+                >
+                </ion-icon>
+                }
+              </ion-item>
+
+              @if ((showErrors || passwordCtrl.touched) && passwordCtrl.errors) { @if
+              (passwordCtrl.errors['required']) {
+              <ion-note color="danger">Password is required</ion-note>
+              } @else if (passwordCtrl.errors['minlength']) {
+              <ion-note color="danger">Password must be at least 6 characters</ion-note>
+              } }
+
+              <ion-button expand="block" color="primary" class="ion-margin-top" type="submit">
+                Register
+              </ion-button>
+
+              <ion-button fill="clear" color="medium" expand="block" (click)="goToLogin()">
+                Already have an account?
+              </ion-button>
+            </form>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-content>
+  `,
+})
+export class RegisterComponent {
+  name = '';
+  email = '';
+  password = '';
+  hidePassword = true;
+  showErrors = false;
+
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private toastCtrl = inject(ToastController);
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
+
+  async onRegister(form: NgForm) {
+    this.showErrors = true;
+    if (form.invalid) return;
+
+    this.authService.register(this.name, this.email, this.password).subscribe({
+      next: async () => {
+        const toast = await this.toastCtrl.create({
+          message: 'Account created successfully!',
+          duration: 2000,
+          color: 'success',
+        });
+        await toast.present();
+        this.router.navigate(['/login']);
+      },
+      error: async (err) => {
+        const toast = await this.toastCtrl.create({
+          message: err.error?.message || 'Registration failed',
+          duration: 2000,
+          color: 'danger',
+        });
+        await toast.present();
+      },
+    });
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+}
