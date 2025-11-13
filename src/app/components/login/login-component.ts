@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth-service';
   template: `
     <ion-header>
       <ion-toolbar>
-        <h1 class="ion-text-center" style="color: #ff6f00;font-size: 1.4rem;">Budget Tracker</h1>
+       <h1 class="page-title ion-text-center">Budget Tracker</h1>
       </ion-toolbar>
     </ion-header>
 
@@ -21,7 +21,7 @@ import { AuthService } from '../../services/auth-service';
       <div class="flex-center">
         <ion-card class="login-card ion-padding">
           <ion-card-header>
-            <ion-card-title class="text-2xl font-semibold">Hello</ion-card-title>
+          <h2 class="login-title">Hello</h2>
             <ion-card-subtitle>Please enter your Credentials</ion-card-subtitle>
           </ion-card-header>
 

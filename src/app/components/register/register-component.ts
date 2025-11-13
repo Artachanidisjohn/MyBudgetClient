@@ -13,7 +13,7 @@ import { IonicModule, ToastController } from '@ionic/angular';
   template: `
     <ion-header>
       <ion-toolbar>
-        <h1 class="ion-text-center" style="color: #ff6f00;font-size: 1.4rem;">Budget Tracker</h1>
+        <h1 class="page-title ion-text-center">Budget Tracker</h1>
       </ion-toolbar>
     </ion-header>
 
@@ -21,7 +21,7 @@ import { IonicModule, ToastController } from '@ionic/angular';
       <div class="flex-center">
         <ion-card class="register-card ion-padding">
           <ion-card-header>
-            <ion-card-title class="text-2xl font-semibold">Create Account</ion-card-title>
+            <ion-card-title class="text-2xl font-semibold login-title">Create Account</ion-card-title>
           </ion-card-header>
 
           <ion-card-content>

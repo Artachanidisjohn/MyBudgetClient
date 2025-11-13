@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 @Component({
   selector: 'app-expenses-list',
@@ -26,13 +27,14 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatFormFieldModule,
     MatInputModule,
     MatNativeDateModule,
+    NgApexchartsModule,
   ],
   styleUrls: ['expenses-list.scss'],
   template: `
     <div class="page-scroll">
       <ion-header>
         <ion-toolbar>
-          <h1 style="color: #ff6f00; text-align: center; font-size: 1.4rem;">My Budget Overview</h1>
+          <h1 class="page-title">My Budget Overview</h1>
           <ion-buttons slot="end">
             <ion-button (click)="logout()">
               <ion-icon
@@ -158,49 +160,48 @@ import { MatNativeDateModule } from '@angular/material/core';
         </div>
       </div>
 
-      } 
+      } @if (activeTab === 'stats') {
 
-@if (activeTab === 'stats') {
+      <div class="stats-wrapper">
+        <div class="stat-card">
+          <h3>Total Expenses</h3>
+          <p class="big-number">{{ getTotal() | currency : 'EUR' }}</p>
+        </div>
 
-<div class="stats-wrapper">
+        <div class="stat-card">
+          <h3>Expenses per Category</h3>
+          <apx-chart [series]="pieSeries" [chart]="pieChart" [labels]="pieLabels"></apx-chart>
+        </div>
 
-  <div class="stat-card">
-    <h3>Total Expenses</h3>
-    <p class="big-number">{{ getTotal() | currency : 'EUR' }}</p>
-  </div>
+        <div class="stat-card">
+          <h3>Top 5 Biggest Expenses</h3>
+          <apx-chart [series]="barSeries" [chart]="barChart" [xaxis]="barXAxis"></apx-chart>
+        </div>
+      </div>
 
-<div class="stat-card">
-  <h3>Expenses per Category</h3>
+      <div class="stats-wrapper">
+        <div class="stat-card">
+          <h3>Expenses per Category</h3>
+          @for (c of getExpensesPerCategory(); track c.name) {
+          <div class="category-row">
+            <span>{{ c.name }}</span>
+            <strong>{{ c.total | currency : 'EUR' }}</strong>
+          </div>
+          }
+        </div>
 
-  @for (c of getExpensesPerCategory(); track c.name) {
-    <div class="category-row">
-      <span>{{ c.name }}</span>
-      <strong>{{ c.total | currency : 'EUR' }}</strong>
-    </div>
-  }
-</div>
+        <div class="stat-card">
+          <h3>Top 5 Biggest Expenses</h3>
+          @for (t of getTopExpenses(); track t.id) {
+          <div class="category-row">
+            <span>{{ t.description }} ({{ getCategoryName(t.categoryId) }})</span>
+            <strong>{{ t.amount | currency : 'EUR' }}</strong>
+          </div>
+          }
+        </div>
+      </div>
 
-
-<div class="stat-card">
-  <h3>Top 5 Biggest Expenses</h3>
-
-  @for (t of getTopExpenses(); track t.id) {
-    <div class="category-row">
-      <span>{{ t.description }} ({{ getCategoryName(t.categoryId) }})</span>
-      <strong>{{ t.amount | currency : 'EUR' }}</strong>
-    </div>
-  }
-</div>
-
-
-</div>
-
-}
-
-
-
-
-      @if (toastMessage) {
+      } @if (toastMessage) {
       <div class="custom-toast">
         {{ toastMessage }}
       </div>
@@ -228,6 +229,42 @@ export class ExpensesListComponent implements OnInit {
   fromDate?: Date;
   toDate?: Date;
   activeTab: 'expenses' | 'stats' = 'expenses';
+  pieSeries: number[] = [];
+  pieLabels: string[] = [];
+  pieChart: any = {
+    type: 'pie',
+    height: 300,
+    toolbar: { show: false },
+    colors: ['#ffcc00', '#66aaff', '#ff7777', '#55ddaa', '#aa88ff'],
+  };
+  barSeries: any[] = [];
+  barChart: any = {
+    type: 'bar',
+    height: 350,
+    toolbar: { show: false },
+    foreColor: '#ffffff',
+  };
+
+  barXAxis: any = {
+    categories: [],
+    labels: {
+      style: {
+        colors: ['#ffffff'],
+        fontSize: '12px',
+        fontWeight: 500,
+      },
+    },
+  };
+
+  barYAxis: any = {
+    labels: {
+      style: {
+        colors: ['#ffffff'],
+        fontSize: '12px',
+        fontWeight: 500,
+      },
+    },
+  };
 
   ngOnInit(): void {
     this.loadExpenses();
@@ -248,12 +285,20 @@ export class ExpensesListComponent implements OnInit {
     this.expensesService.getExpenses().subscribe((data) => {
       this.expenses = data;
       this.applyFilters();
+      this.updateCharts();
     });
   }
 
   applyFilters() {
+    const term = this.searchText.toLowerCase();
+
     this.filteredExpenses = this.expenses
-      .filter((e) => e.description.toLowerCase().includes(this.searchText.toLowerCase()))
+      .filter((e) => {
+        const descriptionMatch = e.description.toLowerCase().includes(term);
+        const categoryMatch = this.getCategoryName(e.categoryId).toLowerCase().includes(term);
+
+        return descriptionMatch || categoryMatch;
+      })
       .filter((e) => {
         const d = new Date(e.date);
 
@@ -262,6 +307,20 @@ export class ExpensesListComponent implements OnInit {
 
         return true;
       });
+  }
+
+  updateCharts() {
+    const perCat = this.getExpensesPerCategory();
+    this.pieLabels = perCat.map((c) => c.name);
+    this.pieSeries = perCat.map((c) => c.total);
+    const top = this.getTopExpenses();
+    this.barSeries = [
+      {
+        name: 'Amount',
+        data: top.map((t) => t.amount ?? 0),
+      },
+    ];
+    this.barXAxis.categories = top.map((t) => t.description);
   }
 
   getTotal() {
@@ -295,25 +354,22 @@ export class ExpensesListComponent implements OnInit {
   }
 
   getExpensesPerCategory() {
-  const result: { name: string; total: number }[] = [];
+    const result: { name: string; total: number }[] = [];
 
-  for (const cat of this.categories) {
-    const total = this.filteredExpenses
-      .filter(e => e.categoryId === cat.id)
-      .reduce((s, x) => s + (x.amount ?? 0), 0);
+    for (const cat of this.categories) {
+      const total = this.filteredExpenses
+        .filter((e) => e.categoryId === cat.id)
+        .reduce((s, x) => s + (x.amount ?? 0), 0);
 
-    if (total > 0) result.push({ name: cat.name, total });
+      if (total > 0) result.push({ name: cat.name, total });
+    }
+
+    return result;
   }
 
-  return result;
-}
-
-getTopExpenses() {
-  return [...this.filteredExpenses]
-    .sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0))
-    .slice(0, 5);
-}
-
+  getTopExpenses() {
+    return [...this.filteredExpenses].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)).slice(0, 5);
+  }
 
   editExpense(expense: Expense): void {
     this.currentExpense = { ...expense };

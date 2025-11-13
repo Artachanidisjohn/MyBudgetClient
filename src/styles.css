@@ -57,8 +57,17 @@ ion-toast {
 }
 
 ion-popover{
-  margin-left: 23px;
+  margin-left: 41px;
   margin-top: 15px;
 }
 
 
+.apexcharts-legend-text {
+  color: #eae2d1 !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+}
+
+.apexcharts-yaxis-texts-g{
+  color: #eae2d1 !important;
+}

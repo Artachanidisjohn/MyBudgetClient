@@ -340,3 +340,55 @@ ion-select-popover {
   gap: 14px;
 }
 
+.stats-wrapper {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  background: linear-gradient(180deg, #2b3a55, #1b2432);
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  color: white;
+}
+
+.stat-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #ffcc80;
+  font-size: 1.2rem;
+}
+
+.big-number {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.category-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.category-row:last-child {
+  border-bottom: none;
+}
+
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ffcc00, #ff9900, #ffcc00);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 8px rgba(255, 180, 0, 0.6), 0 0 15px rgba(255, 160, 0, 0.4);
+  letter-spacing: 1px;
+  padding: 8px 0;
+  text-align: center
+}
+
