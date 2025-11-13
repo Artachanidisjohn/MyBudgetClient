@@ -163,9 +163,35 @@ import { NgApexchartsModule } from 'ng-apexcharts';
       } @if (activeTab === 'stats') {
 
       <div class="stats-wrapper">
+        <div class="stat-card total">
+          <h3>Total Overview</h3>
+
+          <div class="kpi-row">
+            <div class="kpi-box">
+              <label>Total</label>
+              <strong>{{ getTotal() | currency : 'EUR' }}</strong>
+            </div>
+
+            <div class="kpi-box">
+              <label>Avg per day</label>
+              <strong>{{ getAvgPerDay() | currency : 'EUR' }}</strong>
+            </div>
+
+            <div class="kpi-box">
+              <label>Transactions</label>
+              <strong>{{ filteredExpenses.length }}</strong>
+            </div>
+          </div>
+        </div>
         <div class="stat-card">
-          <h3>Total Expenses</h3>
-          <p class="big-number">{{ getTotal() | currency : 'EUR' }}</p>
+          <h3>Expenses per Product</h3>
+
+          @for (p of getExpensesPerProduct(); track p.name) {
+          <div class="category-row">
+            <span>{{ p.name }} ({{ p.category }})</span>
+            <strong>{{ p.total | currency : 'EUR' }}</strong>
+          </div>
+          }
         </div>
 
         <div class="stat-card">
@@ -176,28 +202,6 @@ import { NgApexchartsModule } from 'ng-apexcharts';
         <div class="stat-card">
           <h3>Top 5 Biggest Expenses</h3>
           <apx-chart [series]="barSeries" [chart]="barChart" [xaxis]="barXAxis"></apx-chart>
-        </div>
-      </div>
-
-      <div class="stats-wrapper">
-        <div class="stat-card">
-          <h3>Expenses per Category</h3>
-          @for (c of getExpensesPerCategory(); track c.name) {
-          <div class="category-row">
-            <span>{{ c.name }}</span>
-            <strong>{{ c.total | currency : 'EUR' }}</strong>
-          </div>
-          }
-        </div>
-
-        <div class="stat-card">
-          <h3>Top 5 Biggest Expenses</h3>
-          @for (t of getTopExpenses(); track t.id) {
-          <div class="category-row">
-            <span>{{ t.description }} ({{ getCategoryName(t.categoryId) }})</span>
-            <strong>{{ t.amount | currency : 'EUR' }}</strong>
-          </div>
-          }
         </div>
       </div>
 
@@ -279,6 +283,39 @@ export class ExpensesListComponent implements OnInit {
 
   getCategoryName(categoryId: number): string {
     return this.categories.find((c) => c.id === categoryId)?.name || 'Unknown';
+  }
+
+  getAvgPerDay() {
+    if (this.filteredExpenses.length === 0) return 0;
+
+    const dates = this.filteredExpenses.map((e) => new Date(e.date).getTime());
+    const min = Math.min(...dates);
+    const max = Math.max(...dates);
+
+    const days = Math.max(1, (max - min) / (1000 * 60 * 60 * 24));
+
+    return this.getTotal() / days;
+  }
+
+  getExpensesPerProduct() {
+    const map = new Map<string, { total: number; categoryId: number }>();
+
+    for (const e of this.filteredExpenses) {
+      const desc = e.description.trim();
+
+      if (!map.has(desc)) {
+        map.set(desc, { total: 0, categoryId: e.categoryId });
+      }
+
+      const entry = map.get(desc)!;
+      entry.total += e.amount ?? 0;
+    }
+
+    return Array.from(map.entries()).map(([name, data]) => ({
+      name,
+      total: data.total,
+      category: this.getCategoryName(data.categoryId),
+    }));
   }
 
   loadExpenses() {

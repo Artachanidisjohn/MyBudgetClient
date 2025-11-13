@@ -71,3 +71,19 @@ ion-popover{
 .apexcharts-yaxis-texts-g{
   color: #eae2d1 !important;
 }
+
+.apexcharts-tooltip {
+  background: rgba(28, 35, 50, 0.95) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  backdrop-filter: blur(8px);
+  padding: 10px 14px !important;
+}
+
+.apexcharts-tooltip-title {
+  background: transparent !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 6px 10px !important;
+}
