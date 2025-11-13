@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth-service';
   template: `
     <ion-header>
       <ion-toolbar>
-       <h1 class="page-title ion-text-center">Budget Tracker</h1>
+        <h1 class="page-title ion-text-center">Budget Tracker</h1>
       </ion-toolbar>
     </ion-header>
 
@@ -21,8 +21,8 @@ import { AuthService } from '../../services/auth-service';
       <div class="flex-center">
         <ion-card class="login-card ion-padding">
           <ion-card-header>
-          <h2 class="login-title">Hello</h2>
-            <ion-card-subtitle>Please enter your Credentials</ion-card-subtitle>
+            <h2 class="login-title">Hello</h2>
+            <p class="login-subtitle">Please enter your credentials</p>
           </ion-card-header>
 
           <ion-card-content>
@@ -72,14 +72,13 @@ import { AuthService } from '../../services/auth-service';
               @if ((showErrors || passwordCtrl.touched) && passwordCtrl.errors?.['required']) {
               <ion-note color="danger">Password is required</ion-note>
               }
-
               <ion-button expand="block" color="primary" class="ion-margin-top" type="submit">
                 Login
               </ion-button>
-
-              <ion-button fill="clear" color="medium" expand="block" (click)="goToRegister()">
-                Don't have an account? Sign up
-              </ion-button>
+              <p class="signup-text">
+                You don't have an account?
+                <span class="signup-link" (click)="goToRegister()">Sign up</span>
+              </p>
             </form>
           </ion-card-content>
         </ion-card>

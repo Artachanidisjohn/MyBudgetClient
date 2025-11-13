@@ -8,12 +8,16 @@
 @import '@ionic/angular/css/text-transformation.css';
 @import '@ionic/angular/css/flex-utils.css';
 
-html, body {
+html,
+body {
   height: 100%;
   overflow: hidden;
 }
 
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
 
 /* :root {
   --app-background: linear-gradient(180deg, #5EB8FF 0%, #8DD8FF 100%);
@@ -56,11 +60,10 @@ ion-toast {
   font-size: 0.9rem;
 }
 
-ion-popover{
+ion-popover {
   margin-left: 41px;
   margin-top: 15px;
 }
-
 
 .apexcharts-legend-text {
   color: #eae2d1 !important;
@@ -68,7 +71,7 @@ ion-popover{
   font-size: 16px !important;
 }
 
-.apexcharts-yaxis-texts-g{
+.apexcharts-yaxis-texts-g {
   color: #eae2d1 !important;
 }
 
@@ -76,7 +79,7 @@ ion-popover{
   background: rgba(28, 35, 50, 0.95) !important;
   color: white !important;
   border-radius: 10px !important;
-  border: 1px solid rgba(255,255,255,0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   backdrop-filter: blur(8px);
   padding: 10px 14px !important;
 }
@@ -86,4 +89,10 @@ ion-popover{
   color: #fff !important;
   border: none !important;
   padding: 6px 10px !important;
+}
+
+ion-content {
+  --background: radial-gradient(circle at 30% 20%, rgba(120, 140, 255, 0.25), transparent 60%),
+    radial-gradient(circle at 70% 80%, rgba(80, 200, 255, 0.25), transparent 60%),
+    linear-gradient(to bottom, #2c3554, #1c2440);
 }
