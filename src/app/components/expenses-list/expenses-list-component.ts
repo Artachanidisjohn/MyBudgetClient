@@ -361,6 +361,7 @@ export class ExpensesListComponent implements OnInit {
   toDate?: Date;
 
   toastMessage: string | null = null;
+  showMore = false;
 
   expensesService = inject(ExpensesService);
   categoriesService = inject(CategoriesService);
@@ -441,6 +442,10 @@ export class ExpensesListComponent implements OnInit {
   @HostListener('window:resize')
   onResize() {
     this.isMobile = window.innerWidth < 768;
+  }
+
+  get visibleProducts() {
+    return this.showMore ? this.getExpensesPerProduct() : this.getExpensesPerProduct().slice(0, 5);
   }
 
   getEmptyExpense(): Expense {

@@ -592,3 +592,33 @@ ion-header {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+.show-more-btn {
+  margin-top: 15px;
+  padding: 12px 22px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  background: linear-gradient(90deg, #4a6cf7, #6c8bff);
+  color: #fff;
+
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+
+  transition: all 0.25s ease;
+  width: fit-content;
+}
+
+.show-more-btn:hover {
+  background: linear-gradient(90deg, #3e5de0, #5674f5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.show-more-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
