@@ -102,6 +102,15 @@ button:disabled {
   max-width: 550px;
 }
 
+@media (max-width: 768px) {
+  .expense-card {
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    max-width: 330px;
+  }
+}
+
 .expense-header {
   display: flex;
   justify-content: space-between;
@@ -127,7 +136,6 @@ button:disabled {
   border: none;
   font-size: 1.1rem;
   cursor: pointer;
-  color: #fff;
   padding: 2px;
 }
 
@@ -144,12 +152,6 @@ button:disabled {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 99999;
   max-width: 250px;
-}
-
-.page-scroll {
-  height: 100%;
-  overflow-y: auto;
-  padding-bottom: 60px;
 }
 
 .empty-state {
@@ -325,21 +327,6 @@ ion-select-popover {
   }
 }
 
-.records-section {
-  margin: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  max-width: 570px;
-}
-
-@media (max-width: 768px) {
-  .records-section {
-    max-width: 310px !important;
-  }
-}
-
 .expenses-cards {
   display: flex;
   flex-direction: column;
@@ -392,7 +379,8 @@ ion-select-popover {
   background: linear-gradient(90deg, #ffcc00, #ff9900, #ffcc00);
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: 0 0 8px rgba(255, 180, 0, 0.6), 0 0 15px rgba(255, 160, 0, 0.4);
+  text-shadow: 0 0 8px rgba(255, 180, 0, 0.6),
+    0 0 15px rgba(255, 160, 0, 0.4);
   letter-spacing: 1px;
   padding: 8px 0;
   text-align: center;
@@ -442,4 +430,101 @@ ion-select-popover {
   .kpi-box {
     width: 100%;
   }
+}
+
+.mat-table-wrapper {
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+  padding-right: 5px;
+}
+
+table {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.mat-header-cell {
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.mat-row:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+}
+
+.icon-btn.delete:hover {
+  color: #ff4d4d;
+}
+
+.page-scroll {
+  height: calc(100vh - 110px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .filters-card {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    max-width: 330px;
+  }
+}
+
+table td {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mat-table-wrapper {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 5px;
+}
+
+.mat-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(4px);
+}
+
+table td {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.truncate-text {
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+ion-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.top-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: #1f2a44;
 }

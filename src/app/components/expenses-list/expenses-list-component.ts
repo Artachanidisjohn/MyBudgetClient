@@ -1,4 +1,4 @@
-import { Component, inject, NgZone, OnInit } from '@angular/core';
+import { Component, HostListener, inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -15,6 +15,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-expenses-list',
@@ -28,31 +32,34 @@ import { NgApexchartsModule } from 'ng-apexcharts';
     MatInputModule,
     MatNativeDateModule,
     NgApexchartsModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTooltipModule,
   ],
   styleUrls: ['expenses-list.scss'],
   template: `
+    <ion-header>
+      <ion-toolbar>
+        <h1 class="page-title">My Budget Overview</h1>
+
+        <ion-buttons slot="end">
+          <ion-button (click)="logout()">
+            <ion-icon name="log-out-outline" style="font-size: 1.6rem; color: #ff4d4d;"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <div class="top-tabs">
+      <button [class.active]="activeTab === 'expenses'" (click)="activeTab = 'expenses'">
+        Expenses
+      </button>
+
+      <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Stats</button>
+    </div>
+
     <div class="page-scroll">
-      <ion-header>
-        <ion-toolbar>
-          <h1 class="page-title">My Budget Overview</h1>
-          <ion-buttons slot="end">
-            <ion-button (click)="logout()">
-              <ion-icon
-                name="log-out-outline"
-                style="font-size: 1.6rem; color: #ff4d4d;"
-              ></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <div class="top-tabs">
-        <button [class.active]="activeTab === 'expenses'" (click)="activeTab = 'expenses'">
-          Expenses
-        </button>
-
-        <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Stats</button>
-      </div>
       @if (activeTab === 'expenses') {
       <div class="form-filter-row">
         <form #expenseForm="ngForm" (ngSubmit)="saveExpense(expenseForm)" class="expense-form">
@@ -105,6 +112,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
               />
 
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </div>
@@ -117,7 +125,8 @@ import { NgApexchartsModule } from 'ng-apexcharts';
           <button type="button" class="cancel-btn" (click)="cancelEdit()">❌ Cancel</button>
           }
         </form>
-        <div class="records-section">
+
+        <div class="list-scroll">
           <div class="filters-card">
             <input
               type="text"
@@ -133,6 +142,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
             </div>
           </div>
 
+          @if (isMobile) {
           <div class="expenses-cards">
             @if (filteredExpenses.length === 0) {
             <div class="empty-state">
@@ -143,6 +153,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
             <div class="expense-card">
               <div class="expense-header">
                 <h3>{{ e.description }}</h3>
+
                 <div class="actions">
                   <button class="btn-edit" (click)="editExpense(e)">✏️</button>
                   <button class="btn-delete" (click)="deleteExpense(e.id)">🗑️</button>
@@ -157,11 +168,68 @@ import { NgApexchartsModule } from 'ng-apexcharts';
             </div>
             }
           </div>
+          }
+          @else {
+          <div class="mat-table-wrapper">
+            <table mat-table [dataSource]="dataSource" matSort>
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+
+                <td mat-cell *matCellDef="let e" class="truncate-text" [matTooltip]="e.description">
+                  {{ e.description }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+
+                <td mat-cell *matCellDef="let e">
+                  {{ getCategoryName(e.categoryId) }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount (€)</th>
+
+                <td mat-cell *matCellDef="let e">
+                  {{ e.amount | currency : 'EUR' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+
+                <td mat-cell *matCellDef="let e">
+                  {{ e.date | date : 'shortDate' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="edit">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let e">
+                  <button class="icon-btn" (click)="editExpense(e)">✏️</button>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="delete">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let e">
+                  <button class="icon-btn delete" (click)="deleteExpense(e.id)">🗑️</button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+            <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50, 100]"></mat-paginator>
+          </div>
+          }
         </div>
       </div>
+      }
 
-      } @if (activeTab === 'stats') {
-
+      @if (activeTab === 'stats') {
       <div class="stats-wrapper">
         <div class="stat-card total">
           <h3>Total Overview</h3>
@@ -183,6 +251,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
             </div>
           </div>
         </div>
+
         <div class="stat-card">
           <h3>Expenses per Product</h3>
 
@@ -204,7 +273,6 @@ import { NgApexchartsModule } from 'ng-apexcharts';
           <apx-chart [series]="barSeries" [chart]="barChart" [xaxis]="barXAxis"></apx-chart>
         </div>
       </div>
-
       } @if (toastMessage) {
       <div class="custom-toast">
         {{ toastMessage }}
@@ -214,10 +282,28 @@ import { NgApexchartsModule } from 'ng-apexcharts';
   `,
 })
 export class ExpensesListComponent implements OnInit {
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   expenses: Expense[] = [];
   categories: Category[] = [];
   currentExpense: Expense = this.getEmptyExpense();
+  originalExpense: Expense | null = null;
+
   isEditing = false;
+  displayedColumns = ['description', 'category', 'amount', 'date', 'edit', 'delete'];
+  dataSource = new MatTableDataSource<Expense>();
+
+  today = new Date();
+  activeTab: 'expenses' | 'stats' = 'expenses';
+  isMobile = window.innerWidth < 768;
+  searchText = '';
+
+  filteredExpenses: Expense[] = [];
+  fromDate?: Date;
+  toDate?: Date;
+
+  toastMessage: string | null = null;
 
   expensesService = inject(ExpensesService);
   categoriesService = inject(CategoriesService);
@@ -225,14 +311,7 @@ export class ExpensesListComponent implements OnInit {
   router = inject(Router);
   alertCtrl = inject(AlertController);
   zone = inject(NgZone);
-  toastMessage: string | null = null;
-  originalExpense: Expense | null = null;
-  today = new Date();
-  searchText = '';
-  filteredExpenses: Expense[] = [];
-  fromDate?: Date;
-  toDate?: Date;
-  activeTab: 'expenses' | 'stats' = 'expenses';
+
   pieSeries: number[] = [];
   pieLabels: string[] = [];
   pieChart: any = {
@@ -241,6 +320,7 @@ export class ExpensesListComponent implements OnInit {
     toolbar: { show: false },
     colors: ['#ffcc00', '#66aaff', '#ff7777', '#55ddaa', '#aa88ff'],
   };
+
   barSeries: any[] = [];
   barChart: any = {
     type: 'bar',
@@ -271,14 +351,33 @@ export class ExpensesListComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    this.isMobile = window.innerWidth < 768;
+
     this.loadExpenses();
+
     this.categoriesService.getCategories().subscribe({
       next: (data) => (this.categories = data),
     });
   }
 
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.isMobile = window.innerWidth < 768;
+  }
+
   getEmptyExpense(): Expense {
-    return { id: 0, description: '', amount: null, categoryId: 0, date: '' };
+    return {
+      id: 0,
+      description: '',
+      amount: null,
+      categoryId: 0,
+      date: '',
+    };
   }
 
   getCategoryName(categoryId: number): string {
@@ -288,9 +387,9 @@ export class ExpensesListComponent implements OnInit {
   getAvgPerDay() {
     if (this.filteredExpenses.length === 0) return 0;
 
-    const dates = this.filteredExpenses.map((e) => new Date(e.date).getTime());
-    const min = Math.min(...dates);
-    const max = Math.max(...dates);
+    const timestamps = this.filteredExpenses.map((e) => new Date(e.date).getTime());
+    const min = Math.min(...timestamps);
+    const max = Math.max(...timestamps);
 
     const days = Math.max(1, (max - min) / (1000 * 60 * 60 * 24));
 
@@ -301,13 +400,13 @@ export class ExpensesListComponent implements OnInit {
     const map = new Map<string, { total: number; categoryId: number }>();
 
     for (const e of this.filteredExpenses) {
-      const desc = e.description.trim();
+      const name = e.description.trim();
 
-      if (!map.has(desc)) {
-        map.set(desc, { total: 0, categoryId: e.categoryId });
+      if (!map.has(name)) {
+        map.set(name, { total: 0, categoryId: e.categoryId });
       }
 
-      const entry = map.get(desc)!;
+      const entry = map.get(name)!;
       entry.total += e.amount ?? 0;
     }
 
@@ -331,90 +430,106 @@ export class ExpensesListComponent implements OnInit {
 
     this.filteredExpenses = this.expenses
       .filter((e) => {
-        const descriptionMatch = e.description.toLowerCase().includes(term);
-        const categoryMatch = this.getCategoryName(e.categoryId).toLowerCase().includes(term);
-
-        return descriptionMatch || categoryMatch;
+        const desc = e.description.toLowerCase().includes(term);
+        const cat = this.getCategoryName(e.categoryId).toLowerCase().includes(term);
+        return desc || cat;
       })
       .filter((e) => {
         const d = new Date(e.date);
-
         if (this.fromDate && d < this.fromDate) return false;
         if (this.toDate && d > this.toDate) return false;
-
         return true;
       });
+
+    this.dataSource.data = this.filteredExpenses;
+
+    if (this.sort) this.dataSource.sort = this.sort;
+    if (this.paginator) this.dataSource.paginator = this.paginator;
   }
 
   updateCharts() {
     const perCat = this.getExpensesPerCategory();
+
     this.pieLabels = perCat.map((c) => c.name);
     this.pieSeries = perCat.map((c) => c.total);
+
     const top = this.getTopExpenses();
+
     this.barSeries = [
       {
         name: 'Amount',
         data: top.map((t) => t.amount ?? 0),
       },
     ];
+
     this.barXAxis.categories = top.map((t) => t.description);
   }
 
   getTotal() {
     return this.filteredExpenses.reduce((sum, e) => sum + (e.amount ?? 0), 0);
   }
+
   async saveExpense(form: NgForm) {
     if (form.invalid) return;
 
     const expenseToSave = { ...this.currentExpense };
     expenseToSave.date = new Date(this.currentExpense.date).toISOString();
 
-    let request$: Observable<any> = expenseToSave.id
-      ? this.expensesService.updateExpense(expenseToSave)
-      : this.expensesService.addExpense(expenseToSave);
+    const request$ = (
+      expenseToSave.id
+        ? this.expensesService.updateExpense(expenseToSave)
+        : this.expensesService.addExpense(expenseToSave)
+    ) as Observable<any>;
 
-    request$.subscribe(async () => {
+    request$.subscribe(() => {
       this.currentExpense = this.getEmptyExpense();
       form.resetForm();
       this.loadExpenses();
       this.isEditing = false;
+
       this.showToast(expenseToSave.id ? 'Expense updated!' : 'Expense added!');
     });
   }
 
   sortBy(field: 'date' | 'amount') {
     this.filteredExpenses.sort((a, b) => {
-      if (field === 'date') return new Date(b.date).getTime() - new Date(a.date).getTime();
-      if (field === 'amount') return (b.amount ?? 0) - (a.amount ?? 0);
+      if (field === 'date') {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+
+      if (field === 'amount') {
+        return (b.amount ?? 0) - (a.amount ?? 0);
+      }
+
       return 0;
     });
   }
 
   getExpensesPerCategory() {
-    const result: { name: string; total: number }[] = [];
+    const results: { name: string; total: number }[] = [];
 
-    for (const cat of this.categories) {
+    for (const c of this.categories) {
       const total = this.filteredExpenses
-        .filter((e) => e.categoryId === cat.id)
+        .filter((e) => e.categoryId === c.id)
         .reduce((s, x) => s + (x.amount ?? 0), 0);
 
-      if (total > 0) result.push({ name: cat.name, total });
+      if (total > 0) results.push({ name: c.name, total });
     }
 
-    return result;
+    return results;
   }
 
   getTopExpenses() {
     return [...this.filteredExpenses].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)).slice(0, 5);
   }
 
-  editExpense(expense: Expense): void {
+  editExpense(expense: Expense) {
     this.currentExpense = { ...expense };
     this.originalExpense = { ...expense };
     this.isEditing = true;
   }
 
-  hasChanges(): boolean {
+  hasChanges() {
     return JSON.stringify(this.currentExpense) !== JSON.stringify(this.originalExpense);
   }
 
@@ -451,7 +566,7 @@ export class ExpensesListComponent implements OnInit {
     await alert.present();
   }
 
-  logout(): void {
+  logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
