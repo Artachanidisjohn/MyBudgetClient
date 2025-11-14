@@ -489,14 +489,20 @@ ion-header {
 
 @media (max-width: 768px) {
   .filters-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+
+  .search-input {
     position: sticky;
     top: 140px;
-    z-index: 998;
-    background: rgba(20, 20, 20, 0.9);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    z-index: 999;
   }
 }
+
 
 .form-title {
   margin: 0;
@@ -621,4 +627,14 @@ ion-header {
 .show-more-btn:active {
   transform: translateY(0);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.group-accordion {
+  background: transparent;
+}
+
+::ng-deep .mat-expansion-panel {
+  background: rgba(255,255,255,0.07) !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px;
 }

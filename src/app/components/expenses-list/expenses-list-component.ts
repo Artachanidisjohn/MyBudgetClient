@@ -19,6 +19,13 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+  MatAccordion,
+} from '@angular/material/expansion';
+type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
 @Component({
   selector: 'app-expenses-list',
@@ -36,6 +43,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSortModule,
     MatPaginatorModule,
     MatTooltipModule,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatAccordion,
   ],
   styleUrls: ['expenses-list.scss'],
   template: `
@@ -56,7 +67,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         Expenses
       </button>
       @if (isMobile) {
-      <button [class.active]="activeTab === 'add'" (click)="activeTab = 'add'">Add</button>
+      <button [class.active]="activeTab === 'add'" (click)="activeTab = 'add'">
+        {{ isEditing ? 'Edit' : 'Add' }}
+      </button>
+
       }
       <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Stats</button>
     </div>
@@ -64,7 +78,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     <div>
       @if (isMobile && activeTab === 'add') {
       <form #expenseForm="ngForm" (ngSubmit)="saveExpense(expenseForm)" class="expense-form">
-        <h3 class="form-title">Add Expense</h3>
+        <h3 class="form-title">
+          {{ isEditing ? 'Edit Expense' : 'Add Expense' }}
+        </h3>
+
         <div class="form-divider"></div>
         <div class="form-group">
           <label>Description</label>
@@ -127,11 +144,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
           [(ngModel)]="searchText"
           (input)="applyFilters()"
         />
-
-        <div class="sort-row">
-          <button (click)="sortBy('date')">Sort by Date</button>
-          <button (click)="sortBy('amount')">Sort by Amount</button>
-        </div>
       </div>
 
       <div class="expenses-cards">
@@ -140,24 +152,38 @@ import { MatTooltipModule } from '@angular/material/tooltip';
           <p>📭 No expenses yet</p>
           <small>Add your first expense!</small>
         </div>
-        } @for (e of filteredExpenses; track e.id) {
-        <div class="expense-card">
-          <div class="expense-header">
-            <h3>{{ e.description }}</h3>
-
-            <div class="actions">
-              <button class="btn-edit" (click)="editExpense(e)">✏️</button>
-              <button class="btn-delete" (click)="deleteExpense(e.id)">🗑️</button>
-            </div>
-          </div>
-
-          <div class="expense-info">
-            <p><strong>Category:</strong> {{ getCategoryName(e.categoryId) }}</p>
-            <p><strong>Amount:</strong> {{ e.amount | currency : 'EUR' }}</p>
-            <p><strong>Date:</strong> {{ e.date | date : 'shortDate' }}</p>
-          </div>
-        </div>
         }
+        <mat-accordion class="group-accordion">
+          @for (group of getGroupedExpenses(); track group.title) {
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ group.title }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            @for (e of group.items; track e.id) {
+            <div class="expense-card">
+              <div class="expense-header">
+                <h3>{{ e.description }}</h3>
+
+                <div class="actions">
+                  <button class="btn-edit" (click)="editExpense(e)">✏️</button>
+                  <button class="btn-delete" (click)="deleteExpense(e.id)">🗑️</button>
+                </div>
+              </div>
+
+              <div class="expense-info">
+                <p><strong>Category:</strong> {{ getCategoryName(e.categoryId) }}</p>
+                <p><strong>Amount:</strong> {{ e.amount | currency : 'EUR' }}</p>
+                <p><strong>Date:</strong> {{ e.date | date : 'shortDate' }}</p>
+              </div>
+            </div>
+            }
+          </mat-expansion-panel>
+
+          }
+        </mat-accordion>
       </div>
       } @if (!isMobile && activeTab === 'expenses') {
       <div class="form-filter-row">
@@ -449,6 +475,56 @@ export class ExpensesListComponent implements OnInit {
     return this.showMore ? this.getExpensesPerProduct() : this.getExpensesPerProduct().slice(0, 5);
   }
 
+  getGroupedExpenses() {
+    const groups: Record<SectionKey, Expense[]> = {
+      Today: [],
+      Yesterday: [],
+      'This Week': [],
+      'This Month': [],
+      Older: [],
+    };
+
+    const now = new Date();
+    const today = now.getDate();
+    const currentWeek = this.getWeekNumber(now);
+    const currentMonth = now.getMonth();
+
+    for (const e of this.filteredExpenses) {
+      const d = new Date(e.date);
+      const week = this.getWeekNumber(d);
+
+      if (d.toDateString() === now.toDateString()) {
+        groups.Today.push(e);
+      } else if (this.isYesterday(d)) {
+        groups.Yesterday.push(e);
+      } else if (week === currentWeek) {
+        groups['This Week'].push(e);
+      } else if (d.getMonth() === currentMonth) {
+        groups['This Month'].push(e);
+      } else {
+        groups.Older.push(e);
+      }
+    }
+
+    return Object.keys(groups)
+      .map((k) => ({
+        title: k as SectionKey,
+        items: groups[k as SectionKey],
+      }))
+      .filter((g) => g.items.length > 0);
+  }
+
+  isYesterday(d: Date) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return d.toDateString() === yesterday.toDateString();
+  }
+
+  getWeekNumber(d: Date) {
+    const oneJan = new Date(d.getFullYear(), 0, 1);
+    return Math.ceil(((+d - +oneJan) / 86400000 + oneJan.getDay() + 1) / 7);
+  }
+
   getEmptyExpense(): Expense {
     return {
       id: 0,
@@ -571,20 +647,6 @@ export class ExpensesListComponent implements OnInit {
     });
   }
 
-  sortBy(field: 'date' | 'amount') {
-    this.filteredExpenses.sort((a, b) => {
-      if (field === 'date') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      }
-
-      if (field === 'amount') {
-        return (b.amount ?? 0) - (a.amount ?? 0);
-      }
-
-      return 0;
-    });
-  }
-
   getExpensesPerCategory() {
     const results: { name: string; total: number }[] = [];
 
@@ -607,6 +669,7 @@ export class ExpensesListComponent implements OnInit {
     this.currentExpense = { ...expense };
     this.originalExpense = { ...expense };
     this.isEditing = true;
+    this.activeTab = 'add';
   }
 
   hasChanges() {
