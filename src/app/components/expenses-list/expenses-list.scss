@@ -1,7 +1,7 @@
 .expense-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   padding: 20px;
   background: linear-gradient(180deg, #2b3a55, #1b2432);
   border-radius: 12px;
@@ -99,7 +99,8 @@ button:disabled {
     padding: 16px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    max-width: 330px;
+    max-width: 348px;
+    margin-left: -4px;
   }
 }
 
@@ -249,12 +250,13 @@ ion-select-popover {
 
 .search-input {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(255, 255, 255, 0.15);
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
   color: white;
-  font-size: 1rem;
+  font-size: 0.95rem;
   outline: none;
 }
 
@@ -303,7 +305,7 @@ ion-select-popover {
   .expense-form {
     max-width: 95% !important;
     width: 90% !important;
-    margin: 0 auto !important;
+    margin-top: 65px;
   }
   .form-filter-row {
     display: flex;
@@ -359,6 +361,7 @@ ion-select-popover {
   justify-content: space-between;
   padding: 6px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
 }
 
 .category-row:last-child {
@@ -371,8 +374,7 @@ ion-select-popover {
   background: linear-gradient(90deg, #ffcc00, #ff9900, #ffcc00);
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: 0 0 8px rgba(255, 180, 0, 0.6),
-    0 0 15px rgba(255, 160, 0, 0.4);
+  text-shadow: 0 0 8px rgba(255, 180, 0, 0.6), 0 0 15px rgba(255, 160, 0, 0.4);
   letter-spacing: 1px;
   padding: 8px 0;
   text-align: center;
@@ -429,11 +431,6 @@ table {
   color: #fff;
 }
 
-.mat-header-cell {
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 600;
-}
-
 .mat-row:hover {
   background: rgba(255, 255, 255, 0.07);
 }
@@ -449,17 +446,6 @@ table {
   color: #ff4d4d;
 }
 
-@media (max-width: 768px) {
-  .filters-card {
-    position: sticky;
-    top: 590px; 
-    z-index: 998;
-    background: rgba(20, 20, 20, 0.9);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-  }
-}
-
 table td {
   max-width: 200px;
   white-space: nowrap;
@@ -469,15 +455,9 @@ table td {
 
 .mat-table-wrapper {
   max-height: calc(100vh - 250px);
+  border-radius: 14px;
   overflow-y: auto;
-}
-
-.mat-header-row {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(4px);
+  margin-left: 17px;
 }
 
 table td {
@@ -507,11 +487,108 @@ ion-header {
   background: #1f2a44;
 }
 
-
 @media (max-width: 768px) {
-  .expense-form {
+  .filters-card {
     position: sticky;
-    top: 136px; 
-    z-index: 997;
+    top: 140px;
+    z-index: 998;
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   }
+}
+
+.form-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #e0e6ff;
+  text-align: center;
+  opacity: 0.9;
+  margin-top: 8px;
+}
+
+.form-divider {
+  width: 28%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 8px auto 18px auto;
+  border-radius: 4px;
+}
+
+::ng-deep .mat-mdc-paginator {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #fff !important;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button {
+  color: #fff !important;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-select-value {
+  color: #fff !important;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-select-arrow {
+  color: #fff !important;
+}
+
+.mat-table-wrapper {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  position: relative;
+}
+
+.mat-mdc-header-row,
+.mat-mdc-header-cell {
+  position: sticky !important;
+  top: 0 !important;
+  background: linear-gradient(180deg, #2b3a55, #1b2432);
+  z-index: 2000 !important;
+  color: #fff !important;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+::ng-deep .mat-sort-header-stem,
+::ng-deep .mat-sort-header-indicator,
+::ng-deep .mat-sort-header-pointer-left,
+::ng-deep .mat-sort-header-pointer-right {
+  opacity: 1 !important;
+  color: #ffcc80 !important;
+  stroke: #ffcc80 !important;
+  fill: #ffcc80 !important;
+}
+
+::ng-deep .mat-sort-header-sorted .mat-sort-header-arrow {
+  color: #ffd699 !important;
+  stroke: #ffd699 !important;
+  fill: #ffd699 !important;
+  opacity: 1 !important;
+}
+
+::ng-deep .mat-mdc-header-cell:hover .mat-sort-header-arrow,
+::ng-deep .mat-mdc-header-cell:hover .mat-sort-header-stem,
+::ng-deep .mat-mdc-header-cell:hover .mat-sort-header-indicator {
+  color: #ffe0a3 !important;
+  stroke: #ffe0a3 !important;
+  fill: #ffe0a3 !important;
+  opacity: 1 !important;
+}
+
+::ng-deep .cdk-overlay-container {
+  z-index: 5000 !important;
+}
+
+.expense-card h3,
+.expense-card p {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.category-row span,
+.category-row strong {
+  flex: 1 1 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }

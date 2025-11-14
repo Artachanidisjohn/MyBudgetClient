@@ -55,14 +55,115 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       <button [class.active]="activeTab === 'expenses'" (click)="activeTab = 'expenses'">
         Expenses
       </button>
-
+      @if (isMobile) {
+      <button [class.active]="activeTab === 'add'" (click)="activeTab = 'add'">Add</button>
+      }
       <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Stats</button>
     </div>
 
     <div>
-      @if (activeTab === 'expenses') {
+      @if (isMobile && activeTab === 'add') {
+      <form #expenseForm="ngForm" (ngSubmit)="saveExpense(expenseForm)" class="expense-form">
+        <h3 class="form-title">Add Expense</h3>
+        <div class="form-divider"></div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" [(ngModel)]="currentExpense.description" name="description" required />
+        </div>
+
+        <div class="form-group">
+          <label>Amount (€)</label>
+          <input type="number" [(ngModel)]="currentExpense.amount" name="amount" required />
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <ion-select
+            [(ngModel)]="currentExpense.categoryId"
+            name="categoryId"
+            interface="popover"
+            class="custom-ion-select"
+            placeholder="Select category"
+          >
+            @for (cat of categories; track cat.id) {
+            <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+
+        <div class="form-group">
+          <label>Date</label>
+
+          <mat-form-field appearance="fill" class="date-field">
+            <input
+              matInput
+              [matDatepicker]="picker"
+              [(ngModel)]="currentExpense.date"
+              name="date"
+              required
+              [max]="today"
+              placeholder="Select date"
+              readonly
+            />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <button type="submit" [disabled]="expenseForm.invalid || (isEditing && !hasChanges())">
+          {{ currentExpense.id ? '💾 Update' : '➕ Add' }}
+        </button>
+
+        @if (isEditing) {
+        <button type="button" class="cancel-btn" (click)="cancelEdit()">❌ Cancel</button>
+        }
+      </form>
+      } @if (isMobile && activeTab === 'expenses') {
+      <div class="filters-card">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search..."
+          [(ngModel)]="searchText"
+          (input)="applyFilters()"
+        />
+
+        <div class="sort-row">
+          <button (click)="sortBy('date')">Sort by Date</button>
+          <button (click)="sortBy('amount')">Sort by Amount</button>
+        </div>
+      </div>
+
+      <div class="expenses-cards">
+        @if (filteredExpenses.length === 0) {
+        <div class="empty-state">
+          <p>📭 No expenses yet</p>
+          <small>Add your first expense!</small>
+        </div>
+        } @for (e of filteredExpenses; track e.id) {
+        <div class="expense-card">
+          <div class="expense-header">
+            <h3>{{ e.description }}</h3>
+
+            <div class="actions">
+              <button class="btn-edit" (click)="editExpense(e)">✏️</button>
+              <button class="btn-delete" (click)="deleteExpense(e.id)">🗑️</button>
+            </div>
+          </div>
+
+          <div class="expense-info">
+            <p><strong>Category:</strong> {{ getCategoryName(e.categoryId) }}</p>
+            <p><strong>Amount:</strong> {{ e.amount | currency : 'EUR' }}</p>
+            <p><strong>Date:</strong> {{ e.date | date : 'shortDate' }}</p>
+          </div>
+        </div>
+        }
+      </div>
+      } @if (!isMobile && activeTab === 'expenses') {
       <div class="form-filter-row">
         <form #expenseForm="ngForm" (ngSubmit)="saveExpense(expenseForm)" class="expense-form">
+          <h3 class="form-title">Add Expense</h3>
+          <div class="form-divider"></div>
           <div class="form-group">
             <label>Description</label>
             <input
@@ -80,7 +181,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
           <div class="form-group">
             <label>Category</label>
-
             <ion-select
               [(ngModel)]="currentExpense.categoryId"
               name="categoryId"
@@ -89,9 +189,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
               placeholder="Select category"
             >
               @for (cat of categories; track cat.id) {
-              <ion-select-option [value]="cat.id">
-                {{ cat.name }}
-              </ion-select-option>
+              <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
               }
             </ion-select>
           </div>
@@ -105,14 +203,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
                 [matDatepicker]="picker"
                 [(ngModel)]="currentExpense.date"
                 name="date"
-                [max]="today"
                 required
+                [max]="today"
                 placeholder="Select date"
-                readonly="true"
+                readonly
               />
-
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </div>
@@ -135,77 +231,41 @@ import { MatTooltipModule } from '@angular/material/tooltip';
               [(ngModel)]="searchText"
               (input)="applyFilters()"
             />
-
-            <div class="sort-row">
-              <button (click)="sortBy('date')">Sort by Date</button>
-              <button (click)="sortBy('amount')">Sort by Amount</button>
-            </div>
           </div>
 
-          @if (isMobile) {
-          <div class="expenses-cards">
-            @if (filteredExpenses.length === 0) {
-            <div class="empty-state">
-              <p>📭 No expenses yet</p>
-              <small>Add your first expense to get started!</small>
-            </div>
-            } @for (e of filteredExpenses; track e.id) {
-            <div class="expense-card">
-              <div class="expense-header">
-                <h3>{{ e.description }}</h3>
-
-                <div class="actions">
-                  <button class="btn-edit" (click)="editExpense(e)">✏️</button>
-                  <button class="btn-delete" (click)="deleteExpense(e.id)">🗑️</button>
-                </div>
-              </div>
-
-              <div class="expense-info">
-                <p><strong>Category:</strong> {{ getCategoryName(e.categoryId) }}</p>
-                <p><strong>Amount:</strong> {{ e.amount | currency : 'EUR' }}</p>
-                <p><strong>Date:</strong> {{ e.date | date : 'shortDate' }}</p>
-              </div>
-            </div>
-            }
-          </div>
-          }
-          @else {
           <div class="mat-table-wrapper">
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="description">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-
-                <td mat-cell *matCellDef="let e" class="truncate-text" [matTooltip]="e.description">
+                <td
+                  mat-cell
+                  *matCellDef="let e"
+                  #descCell
+                  [matTooltip]="isTruncated(descCell) ? e.description : ''"
+                  matTooltipPosition="above"
+                  class="truncate-text"
+                >
                   {{ e.description }}
                 </td>
               </ng-container>
 
               <ng-container matColumnDef="category">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
-
-                <td mat-cell *matCellDef="let e">
-                  {{ getCategoryName(e.categoryId) }}
-                </td>
+                <td mat-cell *matCellDef="let e">{{ getCategoryName(e.categoryId) }}</td>
               </ng-container>
 
               <ng-container matColumnDef="amount">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount (€)</th>
-
-                <td mat-cell *matCellDef="let e">
-                  {{ e.amount | currency : 'EUR' }}
-                </td>
+                <td mat-cell *matCellDef="let e">{{ e.amount | currency : 'EUR' }}</td>
               </ng-container>
 
               <ng-container matColumnDef="date">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-
-                <td mat-cell *matCellDef="let e">
-                  {{ e.date | date : 'shortDate' }}
-                </td>
+                <td mat-cell *matCellDef="let e">{{ e.date | date : 'shortDate' }}</td>
               </ng-container>
 
               <ng-container matColumnDef="edit">
-                <th mat-header-cell *matHeaderCellDef></th>
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let e">
                   <button class="icon-btn" (click)="editExpense(e)">✏️</button>
                 </td>
@@ -224,12 +284,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
             <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50, 100]"></mat-paginator>
           </div>
-          }
         </div>
       </div>
-      }
-
-      @if (activeTab === 'stats') {
+      } @if (activeTab === 'stats') {
       <div class="stats-wrapper">
         <div class="stat-card total">
           <h3>Total Overview</h3>
@@ -295,7 +352,7 @@ export class ExpensesListComponent implements OnInit {
   dataSource = new MatTableDataSource<Expense>();
 
   today = new Date();
-  activeTab: 'expenses' | 'stats' = 'expenses';
+  activeTab: 'expenses' | 'add' | 'stats' = 'expenses';
   isMobile = window.innerWidth < 768;
   searchText = '';
 
@@ -361,8 +418,24 @@ export class ExpensesListComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'category':
+          return this.getCategoryName(item.categoryId).toLowerCase();
+        default:
+          return (item as any)[property];
+      }
+    };
+
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+  }
+
+  refreshCharts() {
+    setTimeout(() => {
+      ApexCharts.exec(this.pieChart.chart?.id, 'updateOptions', {});
+      ApexCharts.exec(this.barChart.chart?.id, 'updateOptions', {});
+    }, 200);
   }
 
   @HostListener('window:resize')
@@ -420,6 +493,7 @@ export class ExpensesListComponent implements OnInit {
   loadExpenses() {
     this.expensesService.getExpenses().subscribe((data) => {
       this.expenses = data;
+      this.expenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       this.applyFilters();
       this.updateCharts();
     });
@@ -564,6 +638,11 @@ export class ExpensesListComponent implements OnInit {
     });
 
     await alert.present();
+  }
+
+  isTruncated(element: HTMLElement): boolean {
+    if (!element) return false;
+    return element.scrollWidth > element.clientWidth;
   }
 
   logout() {
