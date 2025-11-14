@@ -306,8 +306,12 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+              <tr class="mat-row no-data-row" *matNoDataRow>
+                <td class="mat-cell" colspan="6">
+                  📭 No expenses found
+                </td>
+              </tr>
             </table>
-
             <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50, 100]"></mat-paginator>
           </div>
         </div>
@@ -337,19 +341,28 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
         <div class="stat-card">
           <h3>Expenses per Product</h3>
-
-          @for (p of visibleProducts; track p.name) {
-          <div class="entry">{{ p.name }} ({{ p.category }})</div>
+          @if (products.length > 0) {
+            @for (p of visibleProducts; track p.name) {
+              <div class="entry">{{ p.name }} ({{ p.category }})</div>
+            }
+          } @else {
+            <p class="no-data-msg">No product expenses yet.</p>
           }
-
+          @if (filteredExpenses.length > 5){
           <button (click)="showMore = !showMore">
             {{ showMore ? 'Show Less' : 'Show More' }}
           </button>
+          }
         </div>
 
         <div class="stat-card">
           <h3>Expenses per Category</h3>
+          @if (chartData && chartData.length > 0) {
           <apx-chart [series]="pieSeries" [chart]="pieChart" [labels]="pieLabels"></apx-chart>
+          }
+          @else{
+            <p class="no-data-msg">No category data available.</p>
+          }
         </div>
 
         <div class="stat-card">
@@ -389,6 +402,8 @@ export class ExpensesListComponent implements OnInit {
 
   toastMessage: string | null = null;
   showMore = false;
+  products: any[] = [];
+  chartData: any[] = [];
 
   expensesService = inject(ExpensesService);
   categoriesService = inject(CategoriesService);
@@ -575,6 +590,8 @@ export class ExpensesListComponent implements OnInit {
   loadExpenses() {
     this.expensesService.getExpenses().subscribe((data) => {
       this.expenses = data;
+      this.products = this.getExpensesPerProduct();
+      this.chartData = [...this.pieSeries];
       this.expenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       this.applyFilters();
       this.updateCharts();
@@ -604,22 +621,27 @@ export class ExpensesListComponent implements OnInit {
   }
 
   updateCharts() {
-    const perCat = this.getExpensesPerCategory();
+  const perCat = this.getExpensesPerCategory();
 
-    this.pieLabels = perCat.map((c) => c.name);
-    this.pieSeries = perCat.map((c) => c.total);
+  this.pieLabels = perCat.map((c) => c.name);
+  this.pieSeries = perCat.map((c) => c.total);
 
-    const top = this.getTopExpenses();
+  this.chartData = this.pieSeries;  
 
-    this.barSeries = [
-      {
-        name: 'Amount',
-        data: top.map((t) => t.amount ?? 0),
-      },
-    ];
+  const top = this.getTopExpenses();
 
-    this.barXAxis.categories = top.map((t) => t.description);
-  }
+  this.barSeries = [
+    {
+      name: 'Amount',
+      data: top.map((t) => t.amount ?? 0),
+    },
+  ];
+
+  this.barXAxis.categories = top.map((t) => t.description);
+
+  this.products = this.getExpensesPerProduct();  // <-- προσθήκη
+}
+
 
   getTotal() {
     return this.filteredExpenses.reduce((sum, e) => sum + (e.amount ?? 0), 0);
@@ -669,7 +691,9 @@ export class ExpensesListComponent implements OnInit {
     this.currentExpense = { ...expense };
     this.originalExpense = { ...expense };
     this.isEditing = true;
-    this.activeTab = 'add';
+    if (this.isMobile) {
+      this.activeTab = 'add';
+    }
   }
 
   hasChanges() {
