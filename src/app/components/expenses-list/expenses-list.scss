@@ -11,14 +11,6 @@
   margin-top: 20px;
 }
 
-@media (max-width: 768px) {
-  .expense-form {
-    max-width: 100%;
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -432,12 +424,6 @@ ion-select-popover {
   }
 }
 
-.mat-table-wrapper {
-  max-height: calc(100vh - 200px);
-  overflow: auto;
-  padding-right: 5px;
-}
-
 table {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
@@ -527,15 +513,5 @@ ion-header {
     position: sticky;
     top: 136px; 
     z-index: 997;
-  }
-
-  .filters-card {
-    position: sticky;
-    z-index: 998;
-  }
-
-  .list-scroll {
-    margin-top: 20px;
-    padding-bottom: 30px;
   }
 }
