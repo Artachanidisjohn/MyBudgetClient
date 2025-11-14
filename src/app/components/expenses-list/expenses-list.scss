@@ -463,23 +463,17 @@ table {
   color: #ff4d4d;
 }
 
-.page-scroll {
-  height: calc(100vh - 110px);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 @media (max-width: 768px) {
   .filters-card {
     position: sticky;
-    top: 0;
-    z-index: 999;
+    top: 136px; 
+    z-index: 998;
     background: rgba(20, 20, 20, 0.9);
     backdrop-filter: blur(6px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    max-width: 330px;
   }
 }
+
 
 table td {
   max-width: 200px;
@@ -489,9 +483,8 @@ table td {
 }
 
 .mat-table-wrapper {
+  max-height: calc(100vh - 250px);
   overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 5px;
 }
 
 .mat-header-row {
@@ -524,7 +517,9 @@ ion-header {
 
 .top-tabs {
   position: sticky;
-  top: 0;
+  top: 76px;
   z-index: 999;
   background: #1f2a44;
 }
+
+

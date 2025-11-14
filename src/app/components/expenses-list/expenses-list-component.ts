@@ -59,7 +59,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Stats</button>
     </div>
 
-    <div class="page-scroll">
+    <div>
       @if (activeTab === 'expenses') {
       <div class="form-filter-row">
         <form #expenseForm="ngForm" (ngSubmit)="saveExpense(expenseForm)" class="expense-form">
