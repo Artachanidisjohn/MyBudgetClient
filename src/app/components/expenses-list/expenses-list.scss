@@ -140,31 +140,82 @@ button:disabled {
   transform: translateX(-50%);
   background: #4caf50;
   color: white;
-  padding: 14px 20px;
+  padding: 18px 28px;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 99999;
-  max-width: 250px;
+  display: inline-block;   
+  min-width: 300px;       
+  text-align: center;      
+  font-size: 17px;   
+}
+
+
+@media (max-width: 600px) {
+  .custom-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4caf50;
+    color: white;
+    padding: 14px 20px;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 99999;
+    max-width: 250px;
+  }
 }
 
 .empty-state {
-  text-align: center;
-  width: 100%;
-  margin-top: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 80px;
+}
+
+.empty-hero {
+  font-size: 80px;
+  opacity: 0.95;
+  margin-bottom: 14px;
+}
+
+.empty-state h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+  margin-top: 40px;
 }
 
 .empty-state p {
-  font-size: 1.4rem;
-  margin-bottom: 8px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 28px;
+  font-weight: 400;
 }
 
-.empty-state small {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+.primary-btn {
+  background: linear-gradient(90deg, #4a6cf7, #6f8cff);
+  padding: 14px 28px;
+  border-radius: 14px;
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(74, 108, 247, 0.45);
+  transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(74, 108, 247, 0.55);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
 }
 
 .custom-ion-select {
@@ -189,6 +240,7 @@ ion-select-popover {
   --highlight-color-valid: transparent !important;
   --highlight-color-invalid: transparent !important;
   --highlight-height: 0 !important;
+  color: #fff !important;
 }
 
 ::ng-deep .date-field .mat-mdc-text-field-wrapper {
@@ -504,7 +556,6 @@ ion-header {
   }
 }
 
-
 .form-title {
   margin: 0;
   font-size: 1.1rem;
@@ -635,7 +686,7 @@ ion-header {
 }
 
 ::ng-deep .mat-expansion-panel {
-  background: rgba(255,255,255,0.07) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
   border-radius: 10px !important;
   margin-bottom: 12px;
 }
@@ -643,6 +694,32 @@ ion-header {
 .no-data-msg {
   text-align: center;
   padding: 30px 0;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 1.1rem;
+}
+
+.category-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 16px;
+}
+
+.category-tabs button {
+  background: #cfd8dc;
+  color: #000;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.category-tabs button.active {
+  background: #1f64ff;
+  color: #fff;
+}
+
+::ng-deep .mat-expansion-panel-header:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
 }

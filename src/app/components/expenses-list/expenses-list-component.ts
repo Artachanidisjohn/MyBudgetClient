@@ -56,7 +56,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
         <ion-buttons slot="end">
           <ion-button (click)="logout()">
-            <ion-icon name="log-out-outline" style="font-size: 1.6rem; color: #ff4d4d;"></ion-icon>
+          <ion-icon name="power-outline" style="font-size: 1.7rem; color: #ff4d4d;"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -72,7 +72,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
       </button>
 
       }
-      <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Stats</button>
+      <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Insights</button>
     </div>
 
     <div>
@@ -146,12 +146,22 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         />
       </div>
 
+      <div class="category-tabs">
+        @for (c of categoryTabs; track c) {
+        <button [class.active]="selectedCategory === c" (click)="filterByCategory(c)">
+          {{ c }}
+        </button>
+        }
+      </div>
       <div class="expenses-cards">
         @if (filteredExpenses.length === 0) {
         <div class="empty-state">
-          <p>📭 No expenses yet</p>
-          <small>Add your first expense!</small>
+          <div class="empty-hero">🪙</div>
+          <h2>No expenses yet</h2>
+          <p>Add your first expense to get started.</p>
+          <button class="primary-btn" (click)="activeTab = 'add'">➕ Add Expense</button>
         </div>
+
         }
         <mat-accordion class="group-accordion">
           @for (group of getGroupedExpenses(); track group.title) {
@@ -307,9 +317,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
               <tr class="mat-row no-data-row" *matNoDataRow>
-                <td class="mat-cell" colspan="6">
-                  📭 No expenses found
-                </td>
+                <td class="mat-cell" colspan="6">📭 No expenses found</td>
               </tr>
             </table>
             <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50, 100]"></mat-paginator>
@@ -341,14 +349,11 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
         <div class="stat-card">
           <h3>Expenses per Product</h3>
-          @if (products.length > 0) {
-            @for (p of visibleProducts; track p.name) {
-              <div class="entry">{{ p.name }} ({{ p.category }})</div>
-            }
-          } @else {
-            <p class="no-data-msg">No product expenses yet.</p>
-          }
-          @if (filteredExpenses.length > 5){
+          @if (products.length > 0) { @for (p of visibleProducts; track p.name) {
+          <div class="entry">{{ p.name }} ({{ p.category }})</div>
+          } } @else {
+          <p class="no-data-msg">No product expenses yet.</p>
+          } @if (filteredExpenses.length > 5){
           <button (click)="showMore = !showMore">
             {{ showMore ? 'Show Less' : 'Show More' }}
           </button>
@@ -359,9 +364,8 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
           <h3>Expenses per Category</h3>
           @if (chartData && chartData.length > 0) {
           <apx-chart [series]="pieSeries" [chart]="pieChart" [labels]="pieLabels"></apx-chart>
-          }
-          @else{
-            <p class="no-data-msg">No category data available.</p>
+          } @else{
+          <p class="no-data-msg">No category data available.</p>
           }
         </div>
 
@@ -395,6 +399,8 @@ export class ExpensesListComponent implements OnInit {
   activeTab: 'expenses' | 'add' | 'stats' = 'expenses';
   isMobile = window.innerWidth < 768;
   searchText = '';
+  selectedCategory = 'All';
+  categoryTabs: string[] = ['All'];
 
   filteredExpenses: Expense[] = [];
   fromDate?: Date;
@@ -456,7 +462,10 @@ export class ExpensesListComponent implements OnInit {
     this.loadExpenses();
 
     this.categoriesService.getCategories().subscribe({
-      next: (data) => (this.categories = data),
+      next: (data) => {
+        this.categories = data;
+        this.categoryTabs = ['All', ...data.map((c) => c.name)];
+      },
     });
   }
 
@@ -488,6 +497,11 @@ export class ExpensesListComponent implements OnInit {
 
   get visibleProducts() {
     return this.showMore ? this.getExpensesPerProduct() : this.getExpensesPerProduct().slice(0, 5);
+  }
+
+  filterByCategory(cat: string) {
+    this.selectedCategory = cat;
+    this.applyFilters();
   }
 
   getGroupedExpenses() {
@@ -614,6 +628,12 @@ export class ExpensesListComponent implements OnInit {
         return true;
       });
 
+    if (this.selectedCategory !== 'All') {
+      this.filteredExpenses = this.filteredExpenses.filter(
+        (e) => this.getCategoryName(e.categoryId) === this.selectedCategory
+      );
+    }
+
     this.dataSource.data = this.filteredExpenses;
 
     if (this.sort) this.dataSource.sort = this.sort;
@@ -621,27 +641,26 @@ export class ExpensesListComponent implements OnInit {
   }
 
   updateCharts() {
-  const perCat = this.getExpensesPerCategory();
+    const perCat = this.getExpensesPerCategory();
 
-  this.pieLabels = perCat.map((c) => c.name);
-  this.pieSeries = perCat.map((c) => c.total);
+    this.pieLabels = perCat.map((c) => c.name);
+    this.pieSeries = perCat.map((c) => c.total);
 
-  this.chartData = this.pieSeries;  
+    this.chartData = this.pieSeries;
 
-  const top = this.getTopExpenses();
+    const top = this.getTopExpenses();
 
-  this.barSeries = [
-    {
-      name: 'Amount',
-      data: top.map((t) => t.amount ?? 0),
-    },
-  ];
+    this.barSeries = [
+      {
+        name: 'Amount',
+        data: top.map((t) => t.amount ?? 0),
+      },
+    ];
 
-  this.barXAxis.categories = top.map((t) => t.description);
+    this.barXAxis.categories = top.map((t) => t.description);
 
-  this.products = this.getExpensesPerProduct();  // <-- προσθήκη
-}
-
+    this.products = this.getExpensesPerProduct(); // <-- προσθήκη
+  }
 
   getTotal() {
     return this.filteredExpenses.reduce((sum, e) => sum + (e.amount ?? 0), 0);
