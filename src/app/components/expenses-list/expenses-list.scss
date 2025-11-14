@@ -466,7 +466,7 @@ table {
 @media (max-width: 768px) {
   .filters-card {
     position: sticky;
-    top: 136px; 
+    top: 590px; 
     z-index: 998;
     background: rgba(20, 20, 20, 0.9);
     backdrop-filter: blur(6px);
@@ -523,3 +523,20 @@ ion-header {
 }
 
 
+@media (max-width: 768px) {
+  .expense-form {
+    position: sticky;
+    top: 136px; 
+    z-index: 997;
+  }
+
+  .filters-card {
+    position: sticky;
+    z-index: 998;
+  }
+
+  .list-scroll {
+    margin-top: 20px;
+    padding-bottom: 30px;
+  }
+}
