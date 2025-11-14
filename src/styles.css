@@ -65,6 +65,13 @@ ion-popover {
   margin-top: 15px;
 }
 
+@media (max-width: 768px) {
+  ion-popover {
+    margin-left: 25px;
+    margin-top: 15px;
+  }
+}
+
 .apexcharts-legend-text {
   color: #eae2d1 !important;
   font-weight: 600 !important;
