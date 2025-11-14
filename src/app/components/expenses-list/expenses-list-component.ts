@@ -312,12 +312,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         <div class="stat-card">
           <h3>Expenses per Product</h3>
 
-          @for (p of getExpensesPerProduct(); track p.name) {
-          <div class="category-row">
-            <span>{{ p.name }} ({{ p.category }})</span>
-            <strong>{{ p.total | currency : 'EUR' }}</strong>
-          </div>
+          @for (p of visibleProducts; track p.name) {
+          <div class="entry">{{ p.name }} ({{ p.category }})</div>
           }
+
+          <button (click)="showMore = !showMore">
+            {{ showMore ? 'Show Less' : 'Show More' }}
+          </button>
         </div>
 
         <div class="stat-card">
