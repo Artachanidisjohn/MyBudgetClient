@@ -146,7 +146,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         />
       </div>
 
-      @if (filteredExpenses.length > 0) {
+      @if (expenses.length > 0) {
       <button class="export-btn" (click)="exportToCSV()">⬇ Export CSV</button>
       }
       <div class="category-tabs">
@@ -271,7 +271,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
               (input)="applyFilters()"
             />
           </div>
-          @if (filteredExpenses.length > 0) {
+          @if (expenses.length > 0) {
           <button class="export-btn" (click)="exportToCSV()">⬇ Export CSV</button>
           }
           <div class="mat-table-wrapper">
