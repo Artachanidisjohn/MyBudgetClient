@@ -654,8 +654,8 @@ ion-header {
 .show-more-btn {
   margin-top: 15px;
   padding: 12px 22px;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   border: none;
   outline: none;
   cursor: pointer;
@@ -664,10 +664,30 @@ ion-header {
   color: #fff;
 
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 
   transition: all 0.25s ease;
-  width: fit-content;
+  width: 100%;
+  text-align: center;
+}
+
+.product-entry {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.product-sub {
+  font-size: 0.9rem;
+  opacity: 0.75;
 }
 
 .show-more-btn:hover {

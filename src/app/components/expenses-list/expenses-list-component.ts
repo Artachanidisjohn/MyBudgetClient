@@ -56,7 +56,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
         <ion-buttons slot="end">
           <ion-button (click)="logout()">
-          <ion-icon name="power-outline" style="font-size: 1.7rem; color: #ff4d4d;"></ion-icon>
+            <ion-icon name="power-outline" style="font-size: 1.7rem; color: #ff4d4d;"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -349,12 +349,19 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
         <div class="stat-card">
           <h3>Expenses per Product</h3>
-          @if (products.length > 0) { @for (p of visibleProducts; track p.name) {
-          <div class="entry">{{ p.name }} ({{ p.category }})</div>
+
+          @if (visibleProducts.length > 0) { @for (p of visibleProducts; track p.name) {
+          <div class="product-entry">
+            <div class="product-header">
+              <span>{{ p.name }}</span>
+              <span>{{ p.total | currency : 'EUR' }}</span>
+            </div>
+            <div class="product-sub">{{ p.category }}</div>
+          </div>
           } } @else {
           <p class="no-data-msg">No product expenses yet.</p>
-          } @if (filteredExpenses.length > 5){
-          <button (click)="showMore = !showMore">
+          } @if (getExpensesPerProduct().length > 5) {
+          <button class="show-more-btn" (click)="showMore = !showMore">
             {{ showMore ? 'Show Less' : 'Show More' }}
           </button>
           }
