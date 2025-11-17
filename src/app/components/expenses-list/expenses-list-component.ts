@@ -220,7 +220,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
             <ion-select
               [(ngModel)]="currentExpense.categoryId"
               name="categoryId"
-              interface="popover"
+              interface="alert"
               class="custom-ion-select"
               placeholder="Select category"
             >

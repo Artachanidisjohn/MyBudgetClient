@@ -60,11 +60,6 @@ ion-toast {
   font-size: 0.9rem;
 }
 
-ion-popover {
-  margin-left: 41px;
-  margin-top: 190px;
-}
-
 @media (max-width: 768px) {
   ion-popover {
     margin-left: 25px;
@@ -106,4 +101,10 @@ ion-content {
 
 body.backdrop-no-scroll {
   overflow-y: auto !important;
+}
+
+ion-alert {
+  .alert-radio-label {
+    color: #ffffff !important;
+  }
 }
