@@ -146,6 +146,9 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         />
       </div>
 
+      @if (filteredExpenses.length > 0) {
+      <button class="export-btn" (click)="exportToCSV()">⬇ Export CSV</button>
+      }
       <div class="category-tabs">
         @for (c of categoryTabs; track c) {
         <button [class.active]="selectedCategory === c" (click)="filterByCategory(c)">
@@ -268,7 +271,9 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
               (input)="applyFilters()"
             />
           </div>
-
+          @if (filteredExpenses.length > 0) {
+          <button class="export-btn" (click)="exportToCSV()">⬇ Export CSV</button>
+          }
           <div class="mat-table-wrapper">
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="description">
@@ -488,6 +493,29 @@ export class ExpensesListComponent implements OnInit {
 
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+  }
+
+  exportToCSV() {
+    const rows = this.filteredExpenses.map((e) => ({
+      Description: e.description,
+      Category: this.getCategoryName(e.categoryId),
+      Amount: e.amount,
+      Date: new Date(e.date).toLocaleDateString(),
+    }));
+
+    const header = Object.keys(rows[0]).join(',');
+    const data = rows.map((r) => Object.values(r).join(',')).join('\n');
+    const csv = header + '\n' + data;
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'expenses.csv';
+    a.click();
+
+    window.URL.revokeObjectURL(url);
   }
 
   refreshCharts() {
