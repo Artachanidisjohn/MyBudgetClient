@@ -353,22 +353,35 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         </div>
 
         <div class="stat-card">
-          <h3>Expenses per Product</h3>
+          <div class="stat-card__head">
+            <h3>Expenses per Product</h3>
 
-          @if (visibleProducts.length > 0) { @for (p of visibleProducts; track p.name) {
-          <div class="product-entry">
-            <div class="product-header">
-              <span>{{ p.name }}</span>
-              <span>{{ p.total | currency : 'EUR' }}</span>
-            </div>
-            <div class="product-sub">{{ p.category }}</div>
+            @if (getExpensesPerProduct().length > 5) {
+            <button class="chip-btn" (click)="showMore = !showMore">
+              {{ showMore ? 'Show less' : 'Show more' }}
+            </button>
+            }
           </div>
-          } } @else {
+
+          @if (visibleProducts.length > 0) {
+          <div class="product-list">
+            @for (p of visibleProducts; track p.name) {
+            <div class="product-row">
+              <div class="product-left">
+                <div class="product-name" title="{{ p.name }}">{{ p.name }}</div>
+                <div class="product-meta">
+                  <span class="product-badge">{{ p.category }}</span>
+                </div>
+              </div>
+
+              <div class="product-right">
+                <div class="product-amount">{{ p.total | currency : 'EUR' }}</div>
+              </div>
+            </div>
+            }
+          </div>
+          } @else {
           <p class="no-data-msg">No product expenses yet.</p>
-          } @if (getExpensesPerProduct().length > 5) {
-          <button class="show-more-btn" (click)="showMore = !showMore">
-            {{ showMore ? 'Show Less' : 'Show More' }}
-          </button>
           }
         </div>
 
@@ -615,26 +628,24 @@ export class ExpensesListComponent implements OnInit {
     return this.getTotal() / days;
   }
 
-  getExpensesPerProduct() {
-    const map = new Map<string, { total: number; categoryId: number }>();
+ getExpensesPerProduct() {
+  const map = new Map<string, { total: number; categoryId: number }>();
 
-    for (const e of this.filteredExpenses) {
-      const name = e.description.trim();
+  for (const e of this.filteredExpenses) {
+    const name = e.description.trim();
+    if (!map.has(name)) map.set(name, { total: 0, categoryId: e.categoryId });
+    map.get(name)!.total += e.amount ?? 0;
+  }
 
-      if (!map.has(name)) {
-        map.set(name, { total: 0, categoryId: e.categoryId });
-      }
-
-      const entry = map.get(name)!;
-      entry.total += e.amount ?? 0;
-    }
-
-    return Array.from(map.entries()).map(([name, data]) => ({
+  return Array.from(map.entries())
+    .map(([name, data]) => ({
       name,
       total: data.total,
       category: this.getCategoryName(data.categoryId),
-    }));
-  }
+    }))
+    .sort((a, b) => b.total - a.total);
+}
+
 
   loadExpenses() {
     this.expensesService.getExpenses().subscribe((data) => {
@@ -694,7 +705,7 @@ export class ExpensesListComponent implements OnInit {
 
     this.barXAxis.categories = top.map((t) => t.description);
 
-    this.products = this.getExpensesPerProduct(); // <-- προσθήκη
+    this.products = this.getExpensesPerProduct();
   }
 
   getTotal() {
