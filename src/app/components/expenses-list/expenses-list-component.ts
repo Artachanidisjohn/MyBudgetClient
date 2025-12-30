@@ -239,11 +239,9 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         <mat-accordion class="group-accordion">
           @for (group of getGroupedExpenses(); track group.title) {
 
-          <mat-expansion-panel>
+          <mat-expansion-panel [expanded]="expandWhenSingle" (opened)="autoExpandOnce = false">
             <mat-expansion-panel-header>
-              <mat-panel-title>
-                {{ group.title }}
-              </mat-panel-title>
+              <mat-panel-title>{{ group.title }}</mat-panel-title>
             </mat-expansion-panel-header>
             @for (e of group.items; track e.id) {
             <div class="expense-card">
@@ -525,6 +523,8 @@ export class ExpensesListComponent implements OnInit {
   zone = inject(NgZone);
   isBudgetEditing = false;
   budgetDraft: number | null = null;
+  groupedExpenses: { title: SectionKey; items: Expense[] }[] = [];
+  autoExpandOnce = true;
 
   pieSeries: number[] = [];
   pieLabels: string[] = [];
@@ -763,8 +763,13 @@ export class ExpensesListComponent implements OnInit {
       );
     }
 
-    this.dataSource.data = this.filteredExpenses;
+    if (this.filteredExpenses.length === 1) {
+      this.autoExpandOnce = true;
+    }
 
+    this.groupedExpenses = this.getGroupedExpenses();
+
+    this.dataSource.data = this.filteredExpenses;
     if (this.sort) this.dataSource.sort = this.sort;
     if (this.paginator) this.dataSource.paginator = this.paginator;
   }
@@ -808,12 +813,19 @@ export class ExpensesListComponent implements OnInit {
     ) as Observable<any>;
 
     request$.subscribe(() => {
+      const wasEdit = !!expenseToSave.id;
+
       this.currentExpense = this.getEmptyExpense();
       form.resetForm();
-      this.loadExpenses();
       this.isEditing = false;
 
-      this.showToast(expenseToSave.id ? 'Expense updated!' : 'Expense added!');
+      if (this.isMobile) {
+        this.activeTab = 'expenses';
+      }
+
+      this.loadExpenses();
+
+      this.showToast(wasEdit ? 'Expense updated!' : 'Expense added!');
     });
   }
 
@@ -978,5 +990,9 @@ export class ExpensesListComponent implements OnInit {
     this.saveMonthlyBudget(v);
     this.isBudgetEditing = false;
     this.showToast('Monthly budget saved!');
+  }
+
+  get expandWhenSingle(): boolean {
+    return this.filteredExpenses.length > 0;
   }
 }
