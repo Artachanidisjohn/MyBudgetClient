@@ -75,6 +75,73 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
       <button [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">Insights</button>
     </div>
 
+    <ng-template #budgetCardTpl>
+      <div class="budget-card">
+        <div class="budget-head">
+          <div class="budget-title">This Month Budget</div>
+
+          @if (!isBudgetEditing) {
+          <button class="budget-edit-btn" type="button" (click)="startBudgetEdit()">
+            {{ monthlyBudget ? 'Edit' : 'Set' }}
+          </button>
+          }
+        </div>
+
+        @if (isBudgetEditing) {
+        <div class="budget-edit">
+          <label class="budget-label">Monthly budget (€)</label>
+          <input
+            class="budget-input"
+            type="number"
+            inputmode="decimal"
+            placeholder="e.g. 500"
+            [(ngModel)]="budgetDraft"
+          />
+
+          <div class="budget-actions">
+            <button type="button" class="budget-btn secondary" (click)="cancelBudgetEdit()">
+              Cancel
+            </button>
+            <button type="button" class="budget-btn primary" (click)="saveBudgetEdit()">
+              Save
+            </button>
+          </div>
+
+          <div class="budget-sub">
+            For <strong>{{ currentMonthLabel }}</strong>
+          </div>
+        </div>
+        } @else { @if (!monthlyBudget) {
+        <div class="budget-empty">No budget set. Tap Edit to add one.</div>
+        } @else {
+        <div class="budget-numbers">
+          <strong>{{ currentMonthTotal | currency : 'EUR' }}</strong>
+          <span class="budget-sep">/</span>
+          <span>{{ monthlyBudget | currency : 'EUR' }}</span>
+
+          @if (currentMonthTotal <= monthlyBudget) {
+          <span class="budget-percent">({{ budgetPercentLabel }}%)</span>
+          } @else {
+          <span class="budget-badge danger">OVER</span>
+          }
+        </div>
+
+        <div class="budget-bar">
+          <div
+            class="budget-bar-fill"
+            [class]="budgetColorClass"
+            [style.width.%]="budgetProgress * 100"
+          ></div>
+        </div>
+
+        @if (currentMonthTotal > monthlyBudget) {
+        <div class="budget-over">
+          Over budget by {{ currentMonthTotal - monthlyBudget | currency : 'EUR' }}
+        </div>
+        } } }
+      </div>
+    </ng-template>
+
     <div>
       @if (isMobile && activeTab === 'add') {
       <form #expenseForm="ngForm" (ngSubmit)="saveExpense(expenseForm)" class="expense-form">
@@ -156,6 +223,9 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         </button>
         }
       </div>
+
+      <ng-container *ngTemplateOutlet="budgetCardTpl"></ng-container>
+
       <div class="expenses-cards">
         @if (filteredExpenses.length === 0) {
         <div class="empty-state">
@@ -199,6 +269,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         </mat-accordion>
       </div>
       } @if (!isMobile && activeTab === 'expenses') {
+
       <div class="form-filter-row">
         <form #expenseForm="ngForm" (ngSubmit)="saveExpense(expenseForm)" class="expense-form">
           <h3 class="form-title">Add Expense</h3>
@@ -262,18 +333,28 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         </form>
 
         <div class="list-scroll">
-          <div class="filters-card">
-            <input
-              type="text"
-              class="search-input"
-              placeholder="Search..."
-              [(ngModel)]="searchText"
-              (input)="applyFilters()"
-            />
+          <div class="right-top">
+            <ng-container *ngTemplateOutlet="budgetCardTpl"></ng-container>
           </div>
-          @if (expenses.length > 0) {
-          <button class="export-btn" (click)="exportToCSV()">⬇ Export CSV</button>
-          }
+
+          <div class="table-toolbar">
+            <div class="filters-card">
+              <input
+                type="text"
+                class="search-input"
+                placeholder="Search..."
+                [(ngModel)]="searchText"
+                (input)="applyFilters()"
+              />
+            </div>
+
+            @if (expenses.length > 0) {
+            <button class="export-btn export-btn--toolbar" (click)="exportToCSV()">
+              ⬇ Export CSV
+            </button>
+            }
+          </div>
+
           <div class="mat-table-wrapper">
             <table mat-table [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="description">
@@ -442,6 +523,8 @@ export class ExpensesListComponent implements OnInit {
   router = inject(Router);
   alertCtrl = inject(AlertController);
   zone = inject(NgZone);
+  isBudgetEditing = false;
+  budgetDraft: number | null = null;
 
   pieSeries: number[] = [];
   pieLabels: string[] = [];
@@ -485,7 +568,7 @@ export class ExpensesListComponent implements OnInit {
     this.isMobile = window.innerWidth < 768;
 
     this.loadExpenses();
-
+    this.loadMonthlyBudget();
     this.categoriesService.getCategories().subscribe({
       next: (data) => {
         this.categories = data;
@@ -628,28 +711,28 @@ export class ExpensesListComponent implements OnInit {
     return this.getTotal() / days;
   }
 
- getExpensesPerProduct() {
-  const map = new Map<string, { total: number; categoryId: number }>();
+  getExpensesPerProduct() {
+    const map = new Map<string, { total: number; categoryId: number }>();
 
-  for (const e of this.filteredExpenses) {
-    const name = e.description.trim();
-    if (!map.has(name)) map.set(name, { total: 0, categoryId: e.categoryId });
-    map.get(name)!.total += e.amount ?? 0;
+    for (const e of this.filteredExpenses) {
+      const name = e.description.trim();
+      if (!map.has(name)) map.set(name, { total: 0, categoryId: e.categoryId });
+      map.get(name)!.total += e.amount ?? 0;
+    }
+
+    return Array.from(map.entries())
+      .map(([name, data]) => ({
+        name,
+        total: data.total,
+        category: this.getCategoryName(data.categoryId),
+      }))
+      .sort((a, b) => b.total - a.total);
   }
-
-  return Array.from(map.entries())
-    .map(([name, data]) => ({
-      name,
-      total: data.total,
-      category: this.getCategoryName(data.categoryId),
-    }))
-    .sort((a, b) => b.total - a.total);
-}
-
 
   loadExpenses() {
     this.expensesService.getExpenses().subscribe((data) => {
       this.expenses = data;
+      this.loadMonthlyBudget();
       this.products = this.getExpensesPerProduct();
       this.chartData = [...this.pieSeries];
       this.expenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -811,5 +894,89 @@ export class ExpensesListComponent implements OnInit {
   showToast(msg: string) {
     this.toastMessage = msg;
     setTimeout(() => (this.toastMessage = null), 2000);
+  }
+
+  monthlyBudget: number | null = null;
+
+  get currentMonthKey(): string {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}`;
+  }
+
+  get monthlyBudgetKey(): string {
+    return `budget_${this.currentMonthKey}`;
+  }
+
+  loadMonthlyBudget() {
+    const raw = localStorage.getItem(this.monthlyBudgetKey);
+    this.monthlyBudget = raw ? Number(raw) : null;
+    if (this.monthlyBudget !== null && (isNaN(this.monthlyBudget) || this.monthlyBudget <= 0)) {
+      this.monthlyBudget = null;
+    }
+  }
+
+  saveMonthlyBudget(value: number) {
+    this.monthlyBudget = value;
+    localStorage.setItem(this.monthlyBudgetKey, String(value));
+  }
+
+  get currentMonthTotal(): number {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+
+    return this.expenses
+      .filter((e) => {
+        const d = new Date(e.date);
+        return d.getFullYear() === y && d.getMonth() === m;
+      })
+      .reduce((sum, e) => sum + (e.amount ?? 0), 0);
+  }
+
+  get budgetProgress(): number {
+    if (!this.monthlyBudget) return 0;
+    const pct = this.currentMonthTotal / this.monthlyBudget;
+    return Math.max(0, Math.min(1, pct));
+  }
+
+  get budgetPercentLabel(): number {
+    if (!this.monthlyBudget) return 0;
+    return Math.round((this.currentMonthTotal / this.monthlyBudget) * 100);
+  }
+
+  get budgetColorClass(): 'ok' | 'warn' | 'danger' {
+    if (!this.monthlyBudget) return 'ok';
+    const pct = this.currentMonthTotal / this.monthlyBudget;
+
+    if (pct < 0.7) return 'ok';
+    if (pct < 0.9) return 'warn';
+    return 'danger';
+  }
+
+  get currentMonthLabel(): string {
+    return new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  }
+
+  startBudgetEdit() {
+    this.budgetDraft = this.monthlyBudget ?? null;
+    this.isBudgetEditing = true;
+  }
+
+  cancelBudgetEdit() {
+    this.isBudgetEditing = false;
+    this.budgetDraft = null;
+  }
+
+  saveBudgetEdit() {
+    const v = Number(this.budgetDraft);
+    if (!v || isNaN(v) || v <= 0) {
+      this.showToast('Please enter a valid budget amount.');
+      return;
+    }
+    this.saveMonthlyBudget(v);
+    this.isBudgetEditing = false;
+    this.showToast('Monthly budget saved!');
   }
 }
