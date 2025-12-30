@@ -101,28 +101,39 @@ export class LoginComponent {
   }
 
   async onLogin(form: NgForm) {
-    this.showErrors = true;
-    if (form.invalid) return;
+    // this.showErrors = true;
+    // if (form.invalid) return;
 
-    this.authService.login(this.email, this.password).subscribe({
-      next: async () => {
-        const toast = await this.toastCtrl.create({
-          message: 'Login successful!',
-          duration: 2000,
-          color: 'success',
-        });
-        await toast.present();
-        this.router.navigate(['/expenses']);
-      },
-      error: async () => {
-        const toast = await this.toastCtrl.create({
-          message: 'Invalid credentials',
-          duration: 2000,
-          color: 'danger',
-        });
-        await toast.present();
-      },
-    });
+    // this.authService.login(this.email, this.password).subscribe({
+    //   next: async () => {
+    //     const toast = await this.toastCtrl.create({
+    //       message: 'Login successful!',
+    //       duration: 2000,
+    //       color: 'success',
+    //     });
+    //     await toast.present();
+    //     this.router.navigate(['/expenses']);
+    //   },
+    //   error: async () => {
+    //     const toast = await this.toastCtrl.create({
+    //       message: 'Invalid credentials',
+    //       duration: 2000,
+    //       color: 'danger',
+    //     });
+    //     await toast.present();
+    //   },
+    // });
+
+    const toast = await this.toastCtrl.create({
+    message: 'Logged in (DEV mode)',
+    duration: 2000,
+    color: 'success',
+  });
+  await toast.present();
+
+  localStorage.setItem('isLoggedIn', 'true');
+
+  this.router.navigate(['/expenses']);
   }
 
   goToRegister() {
