@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { API_BASE } from '../config';
 
 interface LoginResponse {
   token: string;
@@ -11,7 +12,7 @@ interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = '/api/auth';
+  private apiUrl = `${API_BASE}/api/auth`;
   private http = inject(HttpClient);
 
   login(email: string, password: string): Observable<LoginResponse> {
