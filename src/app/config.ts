@@ -1,4 +1,3 @@
-export const API_BASE =
-  location.hostname.includes('localhost')
-    ? 'https://localhost:7194'
-    : 'https://mybudgetapi-fikg.onrender.com';
+import { environment } from "../env/environment";
+
+export const API_BASE = environment.apiBase;
