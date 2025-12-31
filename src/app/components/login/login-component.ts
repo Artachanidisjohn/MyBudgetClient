@@ -2,13 +2,44 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonicModule, ToastController } from '@ionic/angular';
+
+import {
+  IonHeader,
+  IonToolbar,
+  IonContent,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonNote,
+  IonIcon,
+} from '@ionic/angular/standalone';
+
+import { ToastController } from '@ionic/angular';
 import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonContent,
+    IonCard,
+    IonCardHeader,
+    IonCardContent,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonButton,
+    IonNote,
+    IonIcon,
+  ],
   styleUrls: ['login.scss'],
   template: `
     <ion-header>
