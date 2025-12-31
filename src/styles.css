@@ -10,9 +10,10 @@
 
 html, body {
   height: 100%;
-  overflow-x: hidden; 
-  overflow-y: auto;
+  margin: 0;
+  overflow: hidden; 
 }
+
 
 body {
   margin: 0;
@@ -99,9 +100,9 @@ ion-content {
     linear-gradient(to bottom, #2c3554, #1c2440);
 }
 
-body.backdrop-no-scroll {
+/* body.backdrop-no-scroll {
   overflow-y: auto !important;
-}
+} */
 
 ion-alert {
   .alert-radio-label {
