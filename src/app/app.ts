@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
@@ -8,4 +8,6 @@ import { IonicModule } from '@ionic/angular';
   imports: [IonicModule, RouterOutlet],
   templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  protected readonly title = signal('my-budget');
+}
