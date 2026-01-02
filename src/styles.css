@@ -113,12 +113,4 @@ ion-alert .alert-radio-label {
   color: #ffffff !important;
 }
 
-ion-toast {
-  z-index: 99999 !important;
-}
-
-ion-overlay-container {
-  z-index: 99998 !important;
-  position: fixed !important;
-}
 
