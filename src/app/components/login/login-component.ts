@@ -19,7 +19,6 @@ import {
 } from '@ionic/angular/standalone';
 
 import { ToastController } from '@ionic/angular';
-import { NgZone } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
 
 @Component({
@@ -126,51 +125,38 @@ export class LoginComponent {
 
   private authService = inject(AuthService);
   private router = inject(Router);
-   toastCtrl = inject(ToastController);
- zone = inject(NgZone);
+  private toastCtrl = inject(ToastController);
 
   togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
   }
 
-   async showToast(message: string, color: 'success'|'danger') {
-  console.log('[toast] start', { message, color });
+  async onLogin(form: NgForm) {
+    this.showErrors = true;
+    if (form.invalid) return;
 
-  try {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000,
-      color,
-    });
+    this.authService.login(this.email, this.password).subscribe({
+      next: async () => {
+        const toast = await this.toastCtrl.create({
+          message: 'Login successful!',
+          duration: 2000,
+          color: 'success',
+        });
 
-    console.log('[toast] created', toast);
-    await toast.present();
-    console.log('[toast] presented');
-  } catch (e) {
-    console.error('[toast] FAILED', e);
-  }
-}
-
- async onLogin(form: NgForm) {
-  this.showErrors = true;
-  if (form.invalid) return;
-
-  this.authService.login(this.email, this.password).subscribe({
-    next: () => {
-      this.zone.run(async () => {
-        await this.showToast('Login successful!', 'success');
-        await new Promise(r => setTimeout(r, 50)); 
+        await toast.present();
         this.router.navigateByUrl('/expenses', { replaceUrl: true });
-      });
-    },
-    error: () => {
-      this.zone.run(async () => {
-        await this.showToast('Invalid credentials', 'danger');
-      });
-    },
-  });
-}
+      },
+      error: async () => {
+        const toast = await this.toastCtrl.create({
+          message: 'Invalid credentials',
+          duration: 2000,
+          color: 'danger',
+        });
 
+        await toast.present();
+      },
+    });
+  }
 
   goToRegister() {
     this.router.navigate(['/register']);
