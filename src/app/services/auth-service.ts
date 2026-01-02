@@ -57,7 +57,6 @@ isLoggedIn(): boolean {
   const exp = helper.getTokenExpirationDate(token);
   const expired = helper.isTokenExpired(token);
 
-  console.log('TOKEN exp:', exp, 'expired:', expired, 'now:', new Date());
   return !expired;
 }
 
