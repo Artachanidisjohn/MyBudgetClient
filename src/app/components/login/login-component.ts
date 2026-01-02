@@ -131,25 +131,33 @@ export class LoginComponent {
     this.hidePassword = !this.hidePassword;
   }
 
-   async onLogin(form: NgForm) {
-    console.log('onLogin fired', form.valid, this.email, this.password);
+  async onLogin(form: NgForm) {
     this.showErrors = true;
     if (form.invalid) return;
 
-this.authService.login(this.email, this.password).subscribe({
-  next: async (res) => {
-    console.log('LOGIN NEXT RES:', res);
-    console.log('token after login:', localStorage.getItem('token'));
-    await this.router.navigateByUrl('/expenses', { replaceUrl: true });
-  },
-  error: async (err) => {
-    console.log('LOGIN ERROR:', err);
-    console.log('status:', err.status);
-    console.log('error body:', err.error);
-    console.log('headers:', err.headers?.keys?.());
-  },
-});
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.toastCtrl
+          .create({
+            message: 'Login successful!',
+            duration: 2000,
+            color: 'success',
+          })
+          .then((t) => t.present());
 
+        console.log('token after login:', localStorage.getItem('token'));
+        this.router.navigateByUrl('/expenses', { replaceUrl: true });
+      },
+      error: () => {
+        this.toastCtrl
+          .create({
+            message: 'Invalid credentials',
+            duration: 2000,
+            color: 'danger',
+          })
+          .then((t) => t.present());
+      },
+    });
   }
 
   goToRegister() {
