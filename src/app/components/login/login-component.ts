@@ -127,11 +127,16 @@ export class LoginComponent {
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
 
+  constructor() {
+  console.log('LoginComponent loaded');
+}
+
   togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
   }
 
   async onLogin(form: NgForm) {
+    console.log('onLogin fired', form.valid, this.email, this.password);
     this.showErrors = true;
     if (form.invalid) return;
 
