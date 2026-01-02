@@ -18,7 +18,7 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 
-import { ToastController } from '@ionic/angular';
+import { toastController } from '@ionic/core';
 import { AuthService } from '../../services/auth-service';
 
 @Component({
@@ -125,7 +125,6 @@ export class LoginComponent {
 
   private authService = inject(AuthService);
   private router = inject(Router);
-  private toastCtrl = inject(ToastController);
 
   togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
@@ -136,26 +135,23 @@ export class LoginComponent {
     if (form.invalid) return;
 
     this.authService.login(this.email, this.password).subscribe({
-      next: () => {
-        this.toastCtrl
-          .create({
-            message: 'Login successful!',
-            duration: 2000,
-            color: 'success',
-          })
-          .then((t) => t.present());
+      next: async () => {
+        const toast = await toastController.create({
+          message: 'Login successful!',
+          duration: 2000,
+          color: 'success',
+        });
+        toast.present();
 
-        console.log('token after login:', localStorage.getItem('token'));
         this.router.navigateByUrl('/expenses', { replaceUrl: true });
       },
-      error: () => {
-        this.toastCtrl
-          .create({
-            message: 'Invalid credentials',
-            duration: 2000,
-            color: 'danger',
-          })
-          .then((t) => t.present());
+      error: async () => {
+        const toast = await toastController.create({
+          message: 'Invalid credentials',
+          duration: 2000,
+          color: 'danger',
+        });
+        toast.present();
       },
     });
   }

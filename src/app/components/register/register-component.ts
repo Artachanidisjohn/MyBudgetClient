@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
-import { ToastController } from '@ionic/angular';
+import { toastController } from '@ionic/core';
 import {
   IonHeader,
   IonToolbar,
@@ -140,36 +140,44 @@ export class RegisterComponent {
 
   private authService = inject(AuthService);
   private router = inject(Router);
-  private toastCtrl = inject(ToastController);
 
   togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
   }
 
-  async onRegister(form: NgForm) {
-    this.showErrors = true;
-    if (form.invalid) return;
+onRegister(form: NgForm) {
+  this.showErrors = true;
+  if (form.invalid) return;
 
-    this.authService.register(this.name, this.email, this.password).subscribe({
-      next: async () => {
-        const toast = await this.toastCtrl.create({
-          message: 'Account created successfully!',
-          duration: 2000,
-          color: 'success',
-        });
-        await toast.present();
-        this.router.navigate(['/login']);
-      },
-      error: async (err) => {
-        const toast = await this.toastCtrl.create({
-          message: err.error?.message || 'Registration failed',
-          duration: 2000,
-          color: 'danger',
-        });
-        await toast.present();
-      },
-    });
-  }
+  this.authService.register(this.name, this.email, this.password).subscribe({
+    next: async () => {
+      const toast = await toastController.create({
+        message: 'Account created successfully!',
+        duration: 2000,
+        color: 'success',
+      });
+      toast.present();
+
+      this.router.navigateByUrl('/login');
+    },
+
+    error: async (err) => {
+      const msg =
+        err?.status === 409
+          ? 'User already exists. Try logging in.'
+          : (err.error?.message || 'Registration failed');
+
+      const toast = await toastController.create({
+        message: msg,
+        duration: 2000,
+        color: 'danger',
+      });
+      toast.present();
+    },
+  });
+}
+
+
 
   goToLogin() {
     this.router.navigate(['/login']);
