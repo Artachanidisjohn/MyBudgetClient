@@ -55,15 +55,6 @@ import {
 
           <ion-card-content>
             <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)" novalidate>
-              <ion-item lines="full">
-                <ion-label position="floating">Name</ion-label>
-                <ion-input type="text" [(ngModel)]="name" name="name" required #nameCtrl="ngModel">
-                </ion-input>
-              </ion-item>
-
-              @if ((showErrors || nameCtrl.touched) && nameCtrl.errors?.['required']) {
-              <ion-note color="danger">Name is required</ion-note>
-              }
 
               <ion-item lines="full">
                 <ion-label position="floating">Email</ion-label>
@@ -132,7 +123,6 @@ import {
   `,
 })
 export class RegisterComponent {
-  name = '';
   email = '';
   password = '';
   hidePassword = true;
@@ -149,7 +139,7 @@ onRegister(form: NgForm) {
   this.showErrors = true;
   if (form.invalid) return;
 
-  this.authService.register(this.name, this.email, this.password).subscribe({
+  this.authService.register(this.email, this.password).subscribe({
     next: async () => {
       const toast = await toastController.create({
         message: 'Account created successfully!',

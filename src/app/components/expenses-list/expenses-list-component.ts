@@ -203,6 +203,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         }
       </form>
       } @if (isMobile && activeTab === 'expenses') {
+        @if(expenses.length > 0) {
       <div class="filters-card">
         <input
           type="text"
@@ -212,6 +213,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
           (input)="applyFilters()"
         />
       </div>
+        }
 
       @if (expenses.length > 0) {
       <button class="export-btn" (click)="exportToCSV()">⬇ Export CSV</button>
@@ -870,6 +872,7 @@ export class ExpensesListComponent implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'Delete Expense',
       message: 'Are you sure you want to delete this expense?',
+      cssClass: 'danger-alert',
       buttons: [
         {
           text: 'Cancel',

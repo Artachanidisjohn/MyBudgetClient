@@ -350,7 +350,7 @@ ion-select-popover {
   .expense-form {
     max-width: 95% !important;
     width: 90% !important;
-    margin-top: 65px;
+    margin-top: 20px;
   }
   .form-filter-row {
     display: flex;
@@ -513,11 +513,11 @@ table td {
   text-overflow: ellipsis;
 }
 
-ion-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
+// ion-header {
+//   position: sticky;
+//   top: 0;
+//   z-index: 1000;
+// }
 
 .top-tabs {
   position: sticky;
@@ -690,6 +690,7 @@ ion-header {
   gap: 8px;
   overflow-x: auto;
   padding: 10px 16px;
+  margin-top: 20px;
 }
 
 .category-tabs button {

@@ -113,4 +113,43 @@ ion-alert .alert-radio-label {
   color: #ffffff !important;
 }
 
+ion-header,
+ion-toolbar {
+  --background: linear-gradient(180deg, #344a68 0%, #597ba5 100%);
+  --color: #ffffff;
+    position: sticky;
+ top: 0;
+z-index: 1000;
+}
 
+ion-toolbar {
+  --border-width: 0;
+}
+
+
+ion-alert.danger-alert {
+  --backdrop-opacity: 0.45;
+  --background: #1b2432;
+  --max-width: 320px;
+}
+
+ion-alert.danger-alert .alert-wrapper {
+  background: linear-gradient(180deg, #2b3a55, #1b2432) !important;
+  color: #fff !important;
+  border-radius: 16px !important;
+}
+
+ion-alert.danger-alert .alert-title,
+ion-alert.danger-alert .alert-sub-title,
+ion-alert.danger-alert .alert-message {
+  color: #fff !important;
+}
+
+ion-alert.danger-alert .alert-button {
+  color: #7aa5ff !important; 
+  font-weight: 700;
+}
+
+ion-alert.danger-alert .alert-button.alert-button-role-destructive {
+  color: #ff5c5c !important; 
+}

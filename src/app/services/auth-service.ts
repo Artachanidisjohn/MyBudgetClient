@@ -60,7 +60,7 @@ isLoggedIn(): boolean {
   return !expired;
 }
 
-  register(name: string, email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { name, email, password });
+  register(email: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, {email, password });
   }
 }
