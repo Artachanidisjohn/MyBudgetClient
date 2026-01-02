@@ -143,7 +143,8 @@ export class LoginComponent {
           color: 'success',
         });
         await toast.present();
-        this.router.navigate(['/expenses']);
+        console.log('token after login:', localStorage.getItem('token'));
+        await this.router.navigateByUrl('/expenses', { replaceUrl: true });
       },
       error: async () => {
         const toast = await this.toastCtrl.create({

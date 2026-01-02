@@ -12,7 +12,7 @@ interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = `${API_BASE}/api/auth`;
+  private apiUrl = `${API_BASE}/api/Auth`;
   private http = inject(HttpClient);
 
   login(email: string, password: string): Observable<LoginResponse> {
@@ -28,6 +28,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
   }
 
   refreshToken(): Observable<{ token: string; refreshToken: string }> {
@@ -53,16 +54,7 @@ export class AuthService {
     if (!token) return false;
 
     const helper = new JwtHelperService();
-
-    if (helper.isTokenExpired(token)) {
-      this.refreshToken().subscribe({
-        next: () => console.log('Token refreshed automatically'),
-        error: () => this.logout(),
-      });
-      return false;
-    }
-
-    return true;
+    return !helper.isTokenExpired(token);
   }
 
   register(name: string, email: string, password: string): Observable<any> {

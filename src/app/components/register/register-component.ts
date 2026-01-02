@@ -3,12 +3,41 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
+import {
+  IonHeader,
+  IonToolbar,
+  IonContent,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonNote,
+  IonIcon,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [
+  CommonModule,
+  FormsModule,
+  IonHeader,
+  IonToolbar,
+  IonContent,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonNote,
+  IonIcon,
+],
   styleUrls: ['register.scss'],
   template: `
     <ion-header>
