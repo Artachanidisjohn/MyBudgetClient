@@ -833,7 +833,7 @@ table td {
 
 .budget-card {
   width: 90%;
-  max-width: 552px;
+  min-width: 140px;
   margin: 10px 0 6px 15px;
   padding: 14px 14px;
   border-radius: 14px;
@@ -1014,4 +1014,9 @@ table td {
   margin: 0 !important;
   height: 36px;
   padding: 0 14px;
+}
+
+.empty-hero img {
+  width: 110px;
+  height: 110px;
 }

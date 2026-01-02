@@ -235,7 +235,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
       <div class="expenses-cards">
         @if (filteredExpenses.length === 0) {
         <div class="empty-state">
-          <div class="empty-hero">🪙</div>
+          <div class="empty-hero"><img src="assets/icons/coin (1).png" alt="Coin"/></div>
           <h2>No expenses yet</h2>
           <p>Add your first expense to get started.</p>
           <button class="primary-btn" (click)="activeTab = 'add'">➕ Add Expense</button>
