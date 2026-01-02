@@ -49,13 +49,17 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  isLoggedIn(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
+isLoggedIn(): boolean {
+  const token = this.getToken();
+  if (!token) return false;
 
-    const helper = new JwtHelperService();
-    return !helper.isTokenExpired(token);
-  }
+  const helper = new JwtHelperService();
+  const exp = helper.getTokenExpirationDate(token);
+  const expired = helper.isTokenExpired(token);
+
+  console.log('TOKEN exp:', exp, 'expired:', expired, 'now:', new Date());
+  return !expired;
+}
 
   register(name: string, email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, { name, email, password });
