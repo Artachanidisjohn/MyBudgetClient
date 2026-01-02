@@ -82,7 +82,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
 
           @if (!isBudgetEditing) {
           <button class="budget-edit-btn" type="button" (click)="startBudgetEdit()">
-            {{ monthlyBudget ? 'Edit' : 'Set' }}
+            {{ monthlyBudget ? 'Edit Budget' : 'Set Budget' }}
           </button>
           }
         </div>
@@ -102,6 +102,13 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
             <button type="button" class="budget-btn secondary" (click)="cancelBudgetEdit()">
               Cancel
             </button>
+
+            @if (monthlyBudget) {
+            <button type="button" class="budget-btn secondary" (click)="clearMonthlyBudget()">
+              Clear
+            </button>
+            }
+
             <button type="button" class="budget-btn primary" (click)="saveBudgetEdit()">
               Save
             </button>
@@ -112,7 +119,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
           </div>
         </div>
         } @else { @if (!monthlyBudget) {
-        <div class="budget-empty">No budget set. Tap Edit to add one.</div>
+        <div class="budget-empty">Set your monthly budget to get started.</div>
         } @else {
         <div class="budget-numbers">
           <strong>{{ currentMonthTotal | currency : 'EUR' }}</strong>
@@ -202,8 +209,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
         <button type="button" class="cancel-btn" (click)="cancelEdit()">❌ Cancel</button>
         }
       </form>
-      } @if (isMobile && activeTab === 'expenses') {
-        @if(expenses.length > 0) {
+      } @if (isMobile && activeTab === 'expenses') { @if(expenses.length > 0) {
       <div class="filters-card">
         <input
           type="text"
@@ -213,9 +219,7 @@ type SectionKey = 'Today' | 'Yesterday' | 'This Week' | 'This Month' | 'Older';
           (input)="applyFilters()"
         />
       </div>
-        }
-
-      @if (expenses.length > 0) {
+      } @if (expenses.length > 0) {
       <button class="export-btn" (click)="exportToCSV()">⬇ Export CSV</button>
       }
       <div class="category-tabs">
@@ -997,5 +1001,13 @@ export class ExpensesListComponent implements OnInit {
 
   get expandWhenSingle(): boolean {
     return this.filteredExpenses.length > 0;
+  }
+
+  clearMonthlyBudget() {
+    localStorage.removeItem(this.monthlyBudgetKey);
+    this.monthlyBudget = null;
+    this.budgetDraft = null;
+    this.isBudgetEditing = false;
+    this.showToast('Monthly budget cleared.');
   }
 }

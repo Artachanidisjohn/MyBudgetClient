@@ -12,6 +12,7 @@ html, body {
   height: 100%;
   overflow-x: hidden; 
   overflow-y: auto;
+  background: linear-gradient(180deg, #344a68 0%, #597ba5 100%);
 }
 
 body {
@@ -152,4 +153,8 @@ ion-alert.danger-alert .alert-button {
 
 ion-alert.danger-alert .alert-button.alert-button-role-destructive {
   color: #ff5c5c !important; 
+}
+
+ion-app, ion-content {
+  background: linear-gradient(180deg, #344a68 0%, #597ba5 100%) !important;
 }
